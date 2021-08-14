@@ -42,8 +42,8 @@ class PacketBatch{
 	 * @phpstan-return \Generator<int, array{Packet, string}, void, void>
 	 * @throws PacketDecodeException
 	 */
-	public function getPackets(PacketPool $packetPool, PacketSerializerContext $decoderContext, int $max) : \Generator{
-		$serializer = PacketSerializer::decoder($this->buffer, 0, $decoderContext);
+	public function getPackets(int $protocolId, PacketPool $packetPool, PacketSerializerContext $decoderContext, int $max) : \Generator{
+		$serializer = PacketSerializer::decoder($protocolId, $this->buffer, 0, $decoderContext);
 		for($c = 0; $c < $max and !$serializer->feof(); ++$c){
 			try{
 				$buffer = $serializer->getString();
