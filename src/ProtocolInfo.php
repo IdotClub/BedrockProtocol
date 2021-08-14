@@ -42,7 +42,15 @@ final class ProtocolInfo{
 
 	/** Actual Minecraft: PE protocol version */
 	public const CURRENT_PROTOCOL = self::PROTOCOL_1_17_10;
-	public const ACCEPTED_PROTOCOL = [self::CURRENT_PROTOCOL, self::PROTOCOL_1_16_100, self::PROTOCOL_1_16_200, self::PROTOCOL_1_16_210, self::PROTOCOL_1_16_210, self::PROTOCOL_1_16_220, self::PROTOCOL_1_17_0];
+	public const ACCEPTED_PROTOCOL = [
+		self::PROTOCOL_1_16_100,
+		self::PROTOCOL_1_16_200,
+		self::PROTOCOL_1_16_210,
+		self::PROTOCOL_1_16_210,
+		self::PROTOCOL_1_16_220,
+		self::PROTOCOL_1_17_0,
+		self::CURRENT_PROTOCOL
+	];
 	/** Current Minecraft PE version reported by the server. This is usually the earliest currently supported version. */
 	public const MINECRAFT_VERSION = 'v1.17.10';
 	/** Version number sent to clients in ping responses. */
@@ -225,4 +233,16 @@ final class ProtocolInfo{
 	public const SIMULATION_TYPE_PACKET = 0xa8;
 	public const NPC_DIALOGUE_PACKET = 0xa9;
 
+	public static function sortProtocol(int $protocol) : int{
+		if(in_array($protocol, [414, 415, 416, 417, 418, 419], true)){
+			return ProtocolInfo::PROTOCOL_1_16_100;
+		}
+		if(in_array($protocol, [420, 421, 422], true)){
+			return ProtocolInfo::PROTOCOL_1_16_200;
+		}
+		if(in_array($protocol, [423, 424, 425, 426, 427, 428], true)){
+			return ProtocolInfo::PROTOCOL_1_16_210;
+		}
+		return $protocol;
+	}
 }
