@@ -30,7 +30,6 @@ use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
@@ -70,33 +69,27 @@ use function strrev;
 use function substr;
 
 class PacketSerializer extends BinaryStream{
-
-	/** @var int|null */
-	private ?int $protocolId = null;
-	/** @var int */
 	private int $shieldItemRuntimeId;
 	private PacketSerializerContext $context;
+	private int $protocolId;
 
-	protected function __construct(PacketSerializerContext $context, string $buffer = "", int $offset = 0){
+	protected function __construct(int $protocolId, PacketSerializerContext $context, string $buffer = "", int $offset = 0){
 		parent::__construct($buffer, $offset);
+		$this->protocolId = $protocolId;
 		$this->context = $context;
 		$this->shieldItemRuntimeId = $context->getItemDictionary()->fromStringId("minecraft:shield");
 	}
 
-	public static function encoder(PacketSerializerContext $context) : self{
-		return new self($context);
+	public static function encoder(int $protocolId, PacketSerializerContext $context) : self{
+		return new self($protocolId, $context);
 	}
 
-	public static function decoder(string $buffer, int $offset, PacketSerializerContext $context) : self{
-		return new self($context, $buffer, $offset);
-	}
-
-	public function setProtocolId(?int $protocolId) : void{
-		$this->protocolId = $protocolId;
+	public static function decoder(int $protocolId, string $buffer, int $offset, PacketSerializerContext $context) : self{
+		return new self($protocolId, $context, $buffer, $offset);
 	}
 
 	public function getProtocolId() : int{
-		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
+		return $this->protocolId;
 	}
 
 	/**
@@ -310,7 +303,7 @@ class PacketSerializer extends BinaryStream{
 		$readExtraCrapInTheMiddle($this);
 
 		$blockRuntimeId = $this->getVarInt();
-		$extraData = self::decoder($this->getString(), 0, $this->context);
+		$extraData = self::decoder($this->getProtocolId(), $this->getString(), 0, $this->context);
 		return (static function() use ($extraData, $id, $meta, $count, $blockRuntimeId) : ItemStack{
 			$nbtLen = $extraData->getLShort();
 
@@ -375,8 +368,9 @@ class PacketSerializer extends BinaryStream{
 
 			$this->putVarInt($item->getBlockRuntimeId());
 			$context = $this->context;
-			$this->putString((static function() use ($item, $context) : string{
-				$extraData = PacketSerializer::encoder($context);
+			$protocolId = $this->getProtocolId();
+			$this->putString((static function() use ($protocolId, $item, $context) : string{
+				$extraData = PacketSerializer::encoder($protocolId, $context);
 
 				$nbt = $item->getNbt();
 				if($nbt !== null){

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\serializer;
 
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
-use function array_key_exists;
 
 final class ItemTypeDictionary{
 
@@ -64,16 +63,10 @@ final class ItemTypeDictionary{
 	}
 
 	public function fromStringId(string $stringId) : int{
-		if(!array_key_exists($stringId, $this->stringToIntMap)){
-			throw new \InvalidArgumentException("Unmapped string ID \"$stringId\"");
-		}
-		return $this->stringToIntMap[$stringId];
+		return $this->stringToIntMap[$stringId] ?? throw new \InvalidArgumentException("Unmapped string ID \"$stringId\"");;
 	}
 
 	public function fromIntId(int $intId) : string{
-		if(!array_key_exists($intId, $this->intToStringIdMap)){
-			throw new \InvalidArgumentException("Unmapped int ID $intId");
-		}
-		return $this->intToStringIdMap[$intId];
+		return $this->intToStringIdMap[$intId] ?? throw new \InvalidArgumentException("Unmapped int ID $intId");;
 	}
 }
