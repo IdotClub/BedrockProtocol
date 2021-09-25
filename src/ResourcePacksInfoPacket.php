@@ -54,7 +54,6 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$result = new self;
 		$result->mustAccept = $mustAccept;
 		$result->hasScripts = $hasScripts;
-		$result->forceServerPacks = $forceServerPacks;
 		$result->resourcePackEntries = $resourcePacks;
 		$result->behaviorPackEntries = $behaviorPacks;
 		$result->forceServerPacks = $forceServerPacks;

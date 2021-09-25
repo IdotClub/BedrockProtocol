@@ -27,33 +27,40 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
-class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
+class CreatePhotoPacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::CREATE_PHOTO_PACKET;
 
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
-	/** @var bool */
-	public $addUserData;
+	private int $entityUniqueId;
+	private string $photoName;
+	private string $photoItemName;
+
+	public static function create(int $actorUniqueId, string $photoName, string $photoItemName) : self{
+		$result = new self;
+		$result->entityUniqueId = $actorUniqueId;
+		$result->photoName = $photoName;
+		$result->photoItemName = $photoItemName;
+		return $result;
+	}
+
+	public function getEntityUniqueId() : int{ return $this->entityUniqueId; }
+
+	public function getPhotoName() : string{ return $this->photoName; }
+
+	public function getPhotoItemName() : string{ return $this->photoItemName; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getLLong();
-		$this->hotbarSlot = $in->getByte();
-		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
-			$this->addUserData = $in->getBool();
-		}
+		$this->entityUniqueId = $in->getLLong(); //why be consistent mojang ?????
+		$this->photoName = $in->getString();
+		$this->photoItemName = $in->getString();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putLLong($this->entityUniqueId);
-		$out->putByte($this->hotbarSlot);
-		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
-			$out->putBool($this->addUserData);
-		}
+		$out->putString($this->photoName);
+		$out->putString($this->photoItemName);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleActorPickRequest($this);
+		return $handler->handleCreatePhoto($this);
 	}
 }

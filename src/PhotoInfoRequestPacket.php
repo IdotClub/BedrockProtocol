@@ -27,33 +27,30 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
-class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
+/**
+ * TODO: this one has no handlers, so I have no idea which direction it should be sent
+ * It doesn't appear to be used at all right now... this is just here to keep the scraper happy
+ */
+class PhotoInfoRequestPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::PHOTO_INFO_REQUEST_PACKET;
 
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
-	/** @var bool */
-	public $addUserData;
+	private int $photoId;
+
+	public static function create(int $photoId) : self{
+		$result = new self;
+		$result->photoId = $photoId;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getLLong();
-		$this->hotbarSlot = $in->getByte();
-		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
-			$this->addUserData = $in->getBool();
-		}
+		$this->photoId = $in->getEntityUniqueId();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putLLong($this->entityUniqueId);
-		$out->putByte($this->hotbarSlot);
-		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
-			$out->putBool($this->addUserData);
-		}
+		$out->putEntityUniqueId($this->photoId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleActorPickRequest($this);
+		return $handler->handlePhotoInfoRequest($this);
 	}
 }

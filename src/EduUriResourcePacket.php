@@ -26,34 +26,30 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\EducationUriResource;
 
-class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
+class EduUriResourcePacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::EDU_URI_RESOURCE_PACKET;
 
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
-	/** @var bool */
-	public $addUserData;
+	private EducationUriResource $resource;
+
+	public static function create(EducationUriResource $resource) : self{
+		$result = new self;
+		$result->resource = $resource;
+		return $result;
+	}
+
+	public function getResource() : EducationUriResource{ return $this->resource; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getLLong();
-		$this->hotbarSlot = $in->getByte();
-		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
-			$this->addUserData = $in->getBool();
-		}
+		$this->resource = EducationUriResource::read($in);
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putLLong($this->entityUniqueId);
-		$out->putByte($this->hotbarSlot);
-		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
-			$out->putBool($this->addUserData);
-		}
+		$this->resource->write($out);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleActorPickRequest($this);
+		return $handler->handleEduUriResource($this);
 	}
 }
