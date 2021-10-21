@@ -138,11 +138,11 @@ class PacketSerializer extends BinaryStream{
 		}
 		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
-		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
+		if($p_1_17_30 = ($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30)){
 			$geometryDataVersion = $this->getString();
 		}
 		$animationData = $this->getString();
-		if($this->getProtocolId() < ProtocolInfo::PROTOCOL_1_17_30){
+		if(!$p_1_17_30){
 			$premium = $this->getBool();
 			$persona = $this->getBool();
 			$capeOnClassic = $this->getBool();
@@ -176,7 +176,7 @@ class PacketSerializer extends BinaryStream{
 			);
 		}
 
-		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
+		if($p_1_17_30){
 			$premium = $this->getBool();
 			$persona = $this->getBool();
 			$capeOnClassic = $this->getBool();

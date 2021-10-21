@@ -41,7 +41,7 @@ final class ProtocolInfo{
 	 */
 
 	/** Actual Minecraft: PE protocol version */
-	public const CURRENT_PROTOCOL = self::PROTOCOL_1_17_10;
+	public const CURRENT_PROTOCOL = self::PROTOCOL_1_17_40;
 	public const ACCEPTED_PROTOCOL = [
 		self::PROTOCOL_1_16_100,
 		self::PROTOCOL_1_16_200,
@@ -49,14 +49,16 @@ final class ProtocolInfo{
 		self::PROTOCOL_1_16_210,
 		self::PROTOCOL_1_16_220,
 		self::PROTOCOL_1_17_0,
+		self::PROTOCOL_1_17_10,
 		self::PROTOCOL_1_17_30,
 		self::CURRENT_PROTOCOL
 	];
 	/** Current Minecraft PE version reported by the server. This is usually the earliest currently supported version. */
-	public const MINECRAFT_VERSION = 'v1.17.30';
+	public const MINECRAFT_VERSION = 'v1.17.40';
 	/** Version number sent to clients in ping responses. */
-	public const MINECRAFT_VERSION_NETWORK = '1.17.30';
+	public const MINECRAFT_VERSION_NETWORK = '1.17.40';
 
+	public const PROTOCOL_1_17_40 = 471;
 	public const PROTOCOL_1_17_30 = 465;
 	public const PROTOCOL_1_17_10 = 448;
 	public const PROTOCOL_1_17_0 = 440;
@@ -84,7 +86,7 @@ final class ProtocolInfo{
 	public const TAKE_ITEM_ACTOR_PACKET = 0x11;
 	public const MOVE_ACTOR_ABSOLUTE_PACKET = 0x12;
 	public const MOVE_PLAYER_PACKET = 0x13;
-	public const RIDER_JUMP_PACKET = 0x14;
+	public const PASSENGER_JUMP_PACKET = 0x14;
 	public const UPDATE_BLOCK_PACKET = 0x15;
 	public const ADD_PAINTING_PACKET = 0x16;
 	public const TICK_SYNC_PACKET = 0x17;
@@ -238,6 +240,8 @@ final class ProtocolInfo{
 	public const CREATE_PHOTO_PACKET = 0xab;
 	public const UPDATE_SUB_CHUNK_BLOCKS_PACKET = 0xac;
 	public const PHOTO_INFO_REQUEST_PACKET = 0xad;
+	public const SUB_CHUNK_PACKET = 0xae;
+	public const SUB_CHUNK_REQUEST_PACKET = 0xaf;
 
 	public static function sortProtocol(int $protocol) : int{
 		if(in_array($protocol, [414, 415, 416, 417, 418, 419], true)){
