@@ -35,46 +35,43 @@ class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, S
 	public const FLAG_TELEPORT = 0x02;
 	public const FLAG_FORCE_MOVE_LOCAL_ENTITY = 0x04;
 
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $flags = 0;
-	/** @var Vector3 */
-	public $position;
-	/** @var float */
-	public $xRot;
-	/** @var float */
-	public $yRot;
-	/** @var float */
-	public $zRot;
+	public int $actorRuntimeId;
+	public Vector3 $position;
+	public float $pitch;
+	public float $yaw;
+	public float $headYaw; //always zero for non-mobs
+	public int $flags = 0;
 
-	public static function create(int $entityRuntimeId, Vector3 $pos, float $xRot, float $yRot, float $zRot, int $flags = 0) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorRuntimeId, Vector3 $position, float $pitch, float $yaw, float $headYaw, int $flags) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
-		$result->position = $pos->asVector3();
-		$result->xRot = $xRot;
-		$result->yRot = $yRot;
-		$result->zRot = $zRot;
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->position = $position;
+		$result->pitch = $pitch;
+		$result->yaw = $yaw;
+		$result->headYaw = $headYaw;
 		$result->flags = $flags;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->flags = $in->getByte();
 		$this->position = $in->getVector3();
-		$this->xRot = $in->getByteRotation();
-		$this->yRot = $in->getByteRotation();
-		$this->zRot = $in->getByteRotation();
+		$this->pitch = $in->getRotationByte();
+		$this->yaw = $in->getRotationByte();
+		$this->headYaw = $in->getRotationByte();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putByte($this->flags);
 		$out->putVector3($this->position);
-		$out->putByteRotation($this->xRot);
-		$out->putByteRotation($this->yRot);
-		$out->putByteRotation($this->zRot);
+		$out->putRotationByte($this->pitch);
+		$out->putRotationByte($this->yaw);
+		$out->putRotationByte($this->headYaw);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

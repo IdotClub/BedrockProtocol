@@ -25,41 +25,35 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 
 class BlockEventPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BLOCK_EVENT_PACKET;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var int */
-	public $eventType;
-	/** @var int */
-	public $eventData;
+	public BlockPosition $blockPosition;
+	public int $eventType;
+	public int $eventData;
 
-	public static function create(int $eventId, int $eventData, Vector3 $pos) : self{
-		$pk = new self;
-		$pk->eventType = $eventId;
-		$pk->eventData = $eventData;
-		$pk->x = $pos->getFloorX();
-		$pk->y = $pos->getFloorY();
-		$pk->z = $pos->getFloorZ();
-		return $pk;
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(BlockPosition $blockPosition, int $eventType, int $eventData) : self{
+		$result = new self;
+		$result->blockPosition = $blockPosition;
+		$result->eventType = $eventType;
+		$result->eventData = $eventData;
+		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->blockPosition = $in->getBlockPosition();
 		$this->eventType = $in->getVarInt();
 		$this->eventData = $in->getVarInt();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->putBlockPosition($this->blockPosition);
 		$out->putVarInt($this->eventType);
 		$out->putVarInt($this->eventData);
 	}

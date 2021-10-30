@@ -30,8 +30,16 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class AddBehaviorTreePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_BEHAVIOR_TREE_PACKET;
 
-	/** @var string */
-	public $behaviorTreeJson;
+	public string $behaviorTreeJson;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(string $behaviorTreeJson) : self{
+		$result = new self;
+		$result->behaviorTreeJson = $behaviorTreeJson;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->behaviorTreeJson = $in->getString();

@@ -30,11 +30,12 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ContainerClosePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CONTAINER_CLOSE_PACKET;
 
-	/** @var int */
-	public $windowId;
-	/** @var bool */
-	public $server = false;
+	public int $windowId;
+	public bool $server = false;
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(int $windowId, bool $server) : self{
 		$result = new self;
 		$result->windowId = $windowId;

@@ -31,29 +31,32 @@ use function count;
 class AnimateEntityPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ANIMATE_ENTITY_PACKET;
 
-	/** @var string */
-	private $animation;
-	/** @var string */
-	private $nextState;
-	/** @var string */
-	private $stopExpression;
-	/** @var int */
-	private $stopExpressionVersion;
-	/** @var string */
-	private $controller;
-	/** @var float */
-	private $blendOutTime;
+	private string $animation;
+	private string $nextState;
+	private string $stopExpression;
+	private int $stopExpressionVersion;
+	private string $controller;
+	private float $blendOutTime;
 	/**
 	 * @var int[]
 	 * @phpstan-var list<int>
 	 */
-	private $actorRuntimeIds;
+	private array $actorRuntimeIds;
 
 	/**
+	 * @generate-create-func
 	 * @param int[] $actorRuntimeIds
 	 * @phpstan-param list<int> $actorRuntimeIds
 	 */
-	public static function create(string $animation, string $nextState, string $stopExpression, int $stopExpressionVersion, string $controller, float $blendOutTime, array $actorRuntimeIds) : self{
+	public static function create(
+		string $animation,
+		string $nextState,
+		string $stopExpression,
+		int $stopExpressionVersion,
+		string $controller,
+		float $blendOutTime,
+		array $actorRuntimeIds,
+	) : self{
 		$result = new self;
 		$result->animation = $animation;
 		$result->nextState = $nextState;
@@ -94,7 +97,7 @@ class AnimateEntityPacket extends DataPacket implements ClientboundPacket{
 		$this->blendOutTime = $in->getLFloat();
 		$this->actorRuntimeIds = [];
 		for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
-			$this->actorRuntimeIds[] = $in->getEntityRuntimeId();
+			$this->actorRuntimeIds[] = $in->getActorRuntimeId();
 		}
 	}
 
@@ -109,7 +112,7 @@ class AnimateEntityPacket extends DataPacket implements ClientboundPacket{
 		$out->putLFloat($this->blendOutTime);
 		$out->putUnsignedVarInt(count($this->actorRuntimeIds));
 		foreach($this->actorRuntimeIds as $id){
-			$out->putEntityRuntimeId($id);
+			$out->putActorRuntimeId($id);
 		}
 	}
 

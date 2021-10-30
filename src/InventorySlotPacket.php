@@ -31,19 +31,18 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::INVENTORY_SLOT_PACKET;
 
-	/** @var int */
-	public $windowId;
-	/** @var int */
-	public $inventorySlot;
-	/** @var ItemStackWrapper */
-	public $item;
+	public int $windowId;
+	public int $inventorySlot;
+	public ItemStackWrapper $item;
 
-	public static function create(int $windowId, int $slot, ItemStackWrapper $item) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $windowId, int $inventorySlot, ItemStackWrapper $item) : self{
 		$result = new self;
-		$result->inventorySlot = $slot;
-		$result->item = $item;
 		$result->windowId = $windowId;
-
+		$result->inventorySlot = $inventorySlot;
+		$result->item = $item;
 		return $result;
 	}
 

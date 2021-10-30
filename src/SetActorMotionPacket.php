@@ -31,25 +31,26 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class SetActorMotionPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_MOTION_PACKET;
 
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var Vector3 */
-	public $motion;
+	public int $actorRuntimeId;
+	public Vector3 $motion;
 
-	public static function create(int $entityRuntimeId, Vector3 $motion) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorRuntimeId, Vector3 $motion) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
-		$result->motion = $motion->asVector3();
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->motion = $motion;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->motion = $in->getVector3();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putVector3($this->motion);
 	}
 

@@ -32,11 +32,12 @@ class PositionTrackingDBClientRequestPacket extends DataPacket implements Server
 
 	public const ACTION_QUERY = 0;
 
-	/** @var int */
-	private $action;
-	/** @var int */
-	private $trackingId;
+	private int $action;
+	private int $trackingId;
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(int $action, int $trackingId) : self{
 		$result = new self;
 		$result->action = $action;

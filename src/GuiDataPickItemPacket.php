@@ -30,12 +30,20 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class GuiDataPickItemPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
 
-	/** @var string */
-	public $itemDescription;
-	/** @var string */
-	public $itemEffects;
-	/** @var int */
-	public $hotbarSlot;
+	public string $itemDescription;
+	public string $itemEffects;
+	public int $hotbarSlot;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(string $itemDescription, string $itemEffects, int $hotbarSlot) : self{
+		$result = new self;
+		$result->itemDescription = $itemDescription;
+		$result->itemEffects = $itemEffects;
+		$result->hotbarSlot = $hotbarSlot;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->itemDescription = $in->getString();

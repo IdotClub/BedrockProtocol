@@ -32,7 +32,17 @@ class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PURCHASE_RECEIPT_PACKET;
 
 	/** @var string[] */
-	public $entries = [];
+	public array $entries = [];
+
+	/**
+	 * @generate-create-func
+	 * @param string[] $entries
+	 */
+	public static function create(array $entries) : self{
+		$result = new self;
+		$result->entries = $entries;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$count = $in->getUnsignedVarInt();

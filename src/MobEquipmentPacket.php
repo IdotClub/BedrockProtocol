@@ -31,29 +31,27 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 class MobEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EQUIPMENT_PACKET;
 
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var ItemStackWrapper */
-	public $item;
-	/** @var int */
-	public $inventorySlot;
-	/** @var int */
-	public $hotbarSlot;
-	/** @var int */
-	public $windowId = 0;
+	public int $actorRuntimeId;
+	public ItemStackWrapper $item;
+	public int $inventorySlot;
+	public int $hotbarSlot;
+	public int $windowId = 0;
 
-	public static function create(int $entityRuntimeId, ItemStackWrapper $item, int $inventorySlot, int $windowId) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorRuntimeId, ItemStackWrapper $item, int $inventorySlot, int $hotbarSlot, int $windowId) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
+		$result->actorRuntimeId = $actorRuntimeId;
 		$result->item = $item;
 		$result->inventorySlot = $inventorySlot;
-		$result->hotbarSlot = $inventorySlot;
+		$result->hotbarSlot = $hotbarSlot;
 		$result->windowId = $windowId;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
 			$this->item = ItemStackWrapper::read($in);
 		}else{
@@ -65,7 +63,7 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
 			$this->item->write($out);
 		}else{

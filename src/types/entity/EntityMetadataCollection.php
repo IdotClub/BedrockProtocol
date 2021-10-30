@@ -27,8 +27,8 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\player\Player;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use function get_class;
-use function krsort;
 
 class EntityMetadataCollection{
 
@@ -36,12 +36,12 @@ class EntityMetadataCollection{
 	 * @var MetadataProperty[]
 	 * @phpstan-var array<int, MetadataProperty>
 	 */
-	private $properties = [];
+	private array $properties = [];
 	/**
 	 * @var MetadataProperty[]
 	 * @phpstan-var array<int, MetadataProperty>
 	 */
-	private $dirtyProperties = [];
+	private array $dirtyProperties = [];
 
 	public function __construct(){
 
@@ -72,8 +72,8 @@ class EntityMetadataCollection{
 		$this->set($key, new CompoundTagMetadataProperty($value), $force);
 	}
 
-	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->set($key, new BlockPosMetadataProperty($value ?? new Vector3(0, 0, 0)), $force);
+	public function setBlockPos(int $key, ?BlockPosition $value, bool $force = false) : void{
+		$this->set($key, new BlockPosMetadataProperty($value ?? new BlockPosition(0, 0, 0)), $force);
 	}
 
 	public function setLong(int $key, int $value, bool $force = false) : void{

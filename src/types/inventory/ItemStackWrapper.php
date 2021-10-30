@@ -28,10 +28,8 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 final class ItemStackWrapper{
 
-	/** @var int */
-	private $stackId;
-	/** @var ItemStack */
-	private $itemStack;
+	private int $stackId;
+	private ItemStack $itemStack;
 
 	public function __construct(int $stackId, ItemStack $itemStack){
 		$this->stackId = $stackId;

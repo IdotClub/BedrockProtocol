@@ -33,9 +33,11 @@ class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
 	public const COMPRESS_NOTHING = 0;
 	public const COMPRESS_EVERYTHING = 1;
 
-	/** @var int */
-	private $compressionThreshold;
+	private int $compressionThreshold;
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(int $compressionThreshold) : self{
 		$result = new self;
 		$result->compressionThreshold = $compressionThreshold;

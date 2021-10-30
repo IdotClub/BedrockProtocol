@@ -38,31 +38,40 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	public const REQUEST_SET_INTERACTION_TEXT = 5;
 	public const REQUEST_EXECUTE_OPENING_COMMANDS = 6;
 
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $requestType;
-	/** @var string */
-	public $commandString;
-	/** @var int */
-	public $actionType;
+	public int $actorRuntimeId;
+	public int $requestType;
+	public string $commandString;
+	public int $actionIndex;
 	public string $sceneName;
 
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorRuntimeId, int $requestType, string $commandString, int $actionIndex, string $sceneName) : self{
+		$result = new self;
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->requestType = $requestType;
+		$result->commandString = $commandString;
+		$result->actionIndex = $actionIndex;
+		$result->sceneName = $sceneName;
+		return $result;
+	}
+
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->requestType = $in->getByte();
 		$this->commandString = $in->getString();
-		$this->actionType = $in->getByte();
+		$this->actionIndex = $in->getByte();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_10){
 			$this->sceneName = $in->getString();
 		}
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putByte($this->requestType);
 		$out->putString($this->commandString);
-		$out->putByte($this->actionType);
+		$out->putByte($this->actionIndex);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_10){
 			$out->putString($this->sceneName);
 		}

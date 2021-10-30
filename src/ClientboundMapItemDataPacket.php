@@ -41,46 +41,40 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 
 	public const BITFLAG_TEXTURE_UPDATE = 0x02;
 	public const BITFLAG_DECORATION_UPDATE = 0x04;
+	public const BITFLAG_MAP_CREATION = 0x08;
 
-	/** @var int */
-	public $mapId;
-	/** @var int */
-	public $type;
-	/** @var int */
-	public $dimensionId = DimensionIds::OVERWORLD;
-	/** @var bool */
-	public $isLocked = false;
+	public int $mapId;
+	public int $type;
+	public int $dimensionId = DimensionIds::OVERWORLD;
+	public bool $isLocked = false;
 
 	/** @var int[] */
-	public $eids = [];
-	/** @var int */
-	public $scale;
+	public array $parentMapIds = [];
+	public int $scale;
 
 	/** @var MapTrackedObject[] */
-	public $trackedEntities = [];
+	public array $trackedEntities = [];
 	/** @var MapDecoration[] */
-	public $decorations = [];
+	public array $decorations = [];
 
-	/** @var int */
-	public $xOffset = 0;
-	/** @var int */
-	public $yOffset = 0;
+	public int $xOffset = 0;
+	public int $yOffset = 0;
 	public ?MapImage $colors = null;
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->mapId = $in->getEntityUniqueId();
+		$this->mapId = $in->getActorUniqueId();
 		$this->type = $in->getUnsignedVarInt();
 		$this->dimensionId = $in->getByte();
 		$this->isLocked = $in->getBool();
 
-		if(($this->type & 0x08) !== 0){
+		if(($this->type & self::BITFLAG_MAP_CREATION) !== 0){
 			$count = $in->getUnsignedVarInt();
 			for($i = 0; $i < $count; ++$i){
-				$this->eids[] = $in->getEntityUniqueId();
+				$this->parentMapIds[] = $in->getActorUniqueId();
 			}
 		}
 
-		if(($this->type & (0x08 | self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_TEXTURE_UPDATE)) !== 0){ //Decoration bitflag or colour bitflag
+		if(($this->type & (self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_TEXTURE_UPDATE)) !== 0){ //Decoration bitflag or colour bitflag
 			$this->scale = $in->getByte();
 		}
 
@@ -89,9 +83,9 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 				$object = new MapTrackedObject();
 				$object->type = $in->getLInt();
 				if($object->type === MapTrackedObject::TYPE_BLOCK){
-					$in->getBlockPosition($object->x, $object->y, $object->z);
+					$object->blockPosition = $in->getBlockPosition();
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
-					$object->entityUniqueId = $in->getEntityUniqueId();
+					$object->actorUniqueId = $in->getActorUniqueId();
 				}else{
 					throw new PacketDecodeException("Unknown map object type $object->type");
 				}
@@ -125,11 +119,11 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityUniqueId($this->mapId);
+		$out->putActorUniqueId($this->mapId);
 
 		$type = 0;
-		if(($eidsCount = count($this->eids)) > 0){
-			$type |= 0x08;
+		if(($parentMapIdsCount = count($this->parentMapIds)) > 0){
+			$type |= self::BITFLAG_MAP_CREATION;
 		}
 		if(($decorationCount = count($this->decorations)) > 0){
 			$type |= self::BITFLAG_DECORATION_UPDATE;
@@ -142,14 +136,14 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		$out->putByte($this->dimensionId);
 		$out->putBool($this->isLocked);
 
-		if(($type & 0x08) !== 0){ //TODO: find out what these are for
-			$out->putUnsignedVarInt($eidsCount);
-			foreach($this->eids as $eid){
-				$out->putEntityUniqueId($eid);
+		if(($type & self::BITFLAG_MAP_CREATION) !== 0){
+			$out->putUnsignedVarInt($parentMapIdsCount);
+			foreach($this->parentMapIds as $parentMapId){
+				$out->putActorUniqueId($parentMapId);
 			}
 		}
 
-		if(($type & (0x08 | self::BITFLAG_TEXTURE_UPDATE | self::BITFLAG_DECORATION_UPDATE)) !== 0){
+		if(($type & (self::BITFLAG_MAP_CREATION | self::BITFLAG_TEXTURE_UPDATE | self::BITFLAG_DECORATION_UPDATE)) !== 0){
 			$out->putByte($this->scale);
 		}
 
@@ -158,9 +152,9 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			foreach($this->trackedEntities as $object){
 				$out->putLInt($object->type);
 				if($object->type === MapTrackedObject::TYPE_BLOCK){
-					$out->putBlockPosition($object->x, $object->y, $object->z);
+					$out->putBlockPosition($object->blockPosition);
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
-					$out->putEntityUniqueId($object->entityUniqueId);
+					$out->putActorUniqueId($object->actorUniqueId);
 				}else{
 					throw new \InvalidArgumentException("Unknown map object type $object->type");
 				}

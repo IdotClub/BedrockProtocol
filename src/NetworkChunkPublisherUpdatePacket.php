@@ -26,35 +26,31 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 
 class NetworkChunkPublisherUpdatePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var int */
-	public $radius;
+	public BlockPosition $blockPosition;
+	public int $radius;
 
-	public static function create(int $x, int $y, int $z, int $blockRadius) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(BlockPosition $blockPosition, int $radius) : self{
 		$result = new self;
-		$result->x = $x;
-		$result->y = $y;
-		$result->z = $z;
-		$result->radius = $blockRadius;
+		$result->blockPosition = $blockPosition;
+		$result->radius = $radius;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$in->getSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->blockPosition = $in->getSignedBlockPosition();
 		$this->radius = $in->getUnsignedVarInt();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putSignedBlockPosition($this->x, $this->y, $this->z);
+		$out->putSignedBlockPosition($this->blockPosition);
 		$out->putUnsignedVarInt($this->radius);
 	}
 

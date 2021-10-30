@@ -35,17 +35,17 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	public const TYPE_ADD = 0;
 	public const TYPE_REMOVE = 1;
 
+	public int $type;
 	/** @var PlayerListEntry[] */
-	public $entries = [];
-	/** @var int */
-	public $type;
+	public array $entries = [];
 
 	/**
+	 * @generate-create-func
 	 * @param PlayerListEntry[] $entries
 	 */
-	public static function add(array $entries) : self{
+	private static function create(int $type, array $entries) : self{
 		$result = new self;
-		$result->type = self::TYPE_ADD;
+		$result->type = $type;
 		$result->entries = $entries;
 		return $result;
 	}
@@ -53,11 +53,15 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param PlayerListEntry[] $entries
 	 */
+	public static function add(array $entries) : self{
+		return self::create(self::TYPE_ADD, $entries);
+	}
+
+	/**
+	 * @param PlayerListEntry[] $entries
+	 */
 	public static function remove(array $entries) : self{
-		$result = new self;
-		$result->type = self::TYPE_REMOVE;
-		$result->entries = $entries;
-		return $result;
+		return self::create(self::TYPE_REMOVE, $entries);
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
@@ -68,7 +72,7 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 
 			if($this->type === self::TYPE_ADD){
 				$entry->uuid = $in->getUUID();
-				$entry->entityUniqueId = $in->getEntityUniqueId();
+				$entry->actorUniqueId = $in->getActorUniqueId();
 				$entry->username = $in->getString();
 				$entry->xboxUserId = $in->getString();
 				$entry->platformChatId = $in->getString();
@@ -95,7 +99,7 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 		foreach($this->entries as $entry){
 			if($this->type === self::TYPE_ADD){
 				$out->putUUID($entry->uuid);
-				$out->putEntityUniqueId($entry->entityUniqueId);
+				$out->putActorUniqueId($entry->actorUniqueId);
 				$out->putString($entry->username);
 				$out->putString($entry->xboxUserId);
 				$out->putString($entry->platformChatId);

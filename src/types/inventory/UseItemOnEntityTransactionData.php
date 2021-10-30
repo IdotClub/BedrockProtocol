@@ -33,21 +33,15 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	public const ACTION_ATTACK = 1;
 	public const ACTION_ITEM_INTERACT = 2;
 
-	/** @var int */
-	private $entityRuntimeId;
-	/** @var int */
-	private $actionType;
-	/** @var int */
-	private $hotbarSlot;
-	/** @var ItemStackWrapper */
-	private $itemInHand;
-	/** @var Vector3 */
-	private $playerPos;
-	/** @var Vector3 */
-	private $clickPos;
+	private int $actorRuntimeId;
+	private int $actionType;
+	private int $hotbarSlot;
+	private ItemStackWrapper $itemInHand;
+	private Vector3 $playerPosition;
+	private Vector3 $clickPosition;
 
-	public function getEntityRuntimeId() : int{
-		return $this->entityRuntimeId;
+	public function getActorRuntimeId() : int{
+		return $this->actorRuntimeId;
 	}
 
 	public function getActionType() : int{
@@ -62,12 +56,12 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		return $this->itemInHand;
 	}
 
-	public function getPlayerPos() : Vector3{
-		return $this->playerPos;
+	public function getPlayerPosition() : Vector3{
+		return $this->playerPosition;
 	}
 
-	public function getClickPos() : Vector3{
-		return $this->clickPos;
+	public function getClickPosition() : Vector3{
+		return $this->clickPosition;
 	}
 
 	public function getTypeId() : int{
@@ -75,7 +69,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	}
 
 	protected function decodeData(PacketSerializer $stream) : void{
-		$this->entityRuntimeId = $stream->getEntityRuntimeId();
+		$this->actorRuntimeId = $stream->getActorRuntimeId();
 		$this->actionType = $stream->getUnsignedVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
 		if($stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
@@ -83,12 +77,12 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		}else{
 			$this->itemInHand = ItemStackWrapper::legacy($stream->getItemStackWithoutStackId());
 		}
-		$this->playerPos = $stream->getVector3();
-		$this->clickPos = $stream->getVector3();
+		$this->playerPosition = $stream->getVector3();
+		$this->clickPosition = $stream->getVector3();
 	}
 
 	protected function encodeData(PacketSerializer $stream) : void{
-		$stream->putEntityRuntimeId($this->entityRuntimeId);
+		$stream->putActorRuntimeId($this->actorRuntimeId);
 		$stream->putUnsignedVarInt($this->actionType);
 		$stream->putVarInt($this->hotbarSlot);
 		if($stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
@@ -96,22 +90,22 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		}else{
 			$stream->putItemStackWithoutStackId($this->itemInHand->getItemStack());
 		}
-		$stream->putVector3($this->playerPos);
-		$stream->putVector3($this->clickPos);
+		$stream->putVector3($this->playerPosition);
+		$stream->putVector3($this->clickPosition);
 	}
 
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $entityRuntimeId, int $actionType, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
+	public static function new(array $actions, int $actorRuntimeId, int $actionType, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPosition, Vector3 $clickPosition) : self{
 		$result = new self;
 		$result->actions = $actions;
-		$result->entityRuntimeId = $entityRuntimeId;
+		$result->actorRuntimeId = $actorRuntimeId;
 		$result->actionType = $actionType;
 		$result->hotbarSlot = $hotbarSlot;
 		$result->itemInHand = $itemInHand;
-		$result->playerPos = $playerPos;
-		$result->clickPos = $clickPos;
+		$result->playerPosition = $playerPosition;
+		$result->clickPosition = $clickPosition;
 		return $result;
 	}
 }

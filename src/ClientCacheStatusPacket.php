@@ -30,9 +30,11 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ClientCacheStatusPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_STATUS_PACKET;
 
-	/** @var bool */
-	private $enabled;
+	private bool $enabled;
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(bool $enabled) : self{
 		$result = new self;
 		$result->enabled = $enabled;

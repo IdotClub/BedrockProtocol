@@ -30,12 +30,20 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class HurtArmorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
 
-	/** @var int */
-	public $cause;
-	/** @var int */
-	public $health;
-	/** @var int */
-	public $armorSlotFlags;
+	public int $cause;
+	public int $health;
+	public int $armorSlotFlags;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $cause, int $health, int $armorSlotFlags) : self{
+		$result = new self;
+		$result->cause = $cause;
+		$result->health = $health;
+		$result->armorSlotFlags = $armorSlotFlags;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->cause = $in->getVarInt();

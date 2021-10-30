@@ -30,11 +30,12 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class SettingsCommandPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SETTINGS_COMMAND_PACKET;
 
-	/** @var string */
-	private $command;
-	/** @var bool */
-	private $suppressOutput;
+	private string $command;
+	private bool $suppressOutput;
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(string $command, bool $suppressOutput) : self{
 		$result = new self;
 		$result->command = $command;

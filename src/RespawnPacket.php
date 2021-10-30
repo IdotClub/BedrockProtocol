@@ -35,31 +35,31 @@ class RespawnPacket extends DataPacket implements ClientboundPacket, Serverbound
 	public const READY_TO_SPAWN = 1;
 	public const CLIENT_READY_TO_SPAWN = 2;
 
-	/** @var Vector3 */
-	public $position;
-	/** @var int */
-	public $respawnState = self::SEARCHING_FOR_SPAWN;
-	/** @var int */
-	public $entityRuntimeId;
+	public Vector3 $position;
+	public int $respawnState = self::SEARCHING_FOR_SPAWN;
+	public int $actorRuntimeId;
 
-	public static function create(Vector3 $position, int $respawnStatus, int $entityRuntimeId) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(Vector3 $position, int $respawnState, int $actorRuntimeId) : self{
 		$result = new self;
-		$result->position = $position->asVector3();
-		$result->respawnState = $respawnStatus;
-		$result->entityRuntimeId = $entityRuntimeId;
+		$result->position = $position;
+		$result->respawnState = $respawnState;
+		$result->actorRuntimeId = $actorRuntimeId;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->position = $in->getVector3();
 		$this->respawnState = $in->getByte();
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVector3($this->position);
 		$out->putByte($this->respawnState);
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

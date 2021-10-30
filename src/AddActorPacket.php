@@ -35,36 +35,63 @@ use function count;
 class AddActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ACTOR_PACKET;
 
-	/** @var int|null */
-	public $entityUniqueId = null; //TODO
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var string */
-	public $type;
-	/** @var Vector3 */
-	public $position;
-	/** @var Vector3|null */
-	public $motion;
-	/** @var float */
-	public $pitch = 0.0;
-	/** @var float */
-	public $yaw = 0.0;
-	/** @var float */
-	public $headYaw = 0.0;
+	public int $actorUniqueId;
+	public int $actorRuntimeId;
+	public string $type;
+	public Vector3 $position;
+	public ?Vector3 $motion = null;
+	public float $pitch = 0.0;
+	public float $yaw = 0.0;
+	public float $headYaw = 0.0;
 
 	/** @var Attribute[] */
-	public $attributes = [];
+	public array $attributes = [];
 	/**
 	 * @var MetadataProperty[]
 	 * @phpstan-var array<int, MetadataProperty>
 	 */
-	public $metadata = [];
+	public array $metadata = [];
 	/** @var EntityLink[] */
-	public $links = [];
+	public array $links = [];
+
+	/**
+	 * @generate-create-func
+	 * @param Attribute[]        $attributes
+	 * @param MetadataProperty[] $metadata
+	 * @param EntityLink[]       $links
+	 * @phpstan-param array<int, MetadataProperty> $metadata
+	 */
+	public static function create(
+		int $actorUniqueId,
+		int $actorRuntimeId,
+		string $type,
+		Vector3 $position,
+		?Vector3 $motion,
+		float $pitch,
+		float $yaw,
+		float $headYaw,
+		array $attributes,
+		array $metadata,
+		array $links,
+	) : self{
+		$result = new self;
+		$result->actorUniqueId = $actorUniqueId;
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->type = $type;
+		$result->position = $position;
+		$result->motion = $motion;
+		$result->pitch = $pitch;
+		$result->yaw = $yaw;
+		$result->headYaw = $headYaw;
+		$result->attributes = $attributes;
+		$result->metadata = $metadata;
+		$result->links = $links;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorUniqueId = $in->getActorUniqueId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->type = $in->getString();
 		$this->position = $in->getVector3();
 		$this->motion = $in->getVector3();
@@ -89,8 +116,8 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorUniqueId($this->actorUniqueId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putString($this->type);
 		$out->putVector3($this->position);
 		$out->putVector3Nullable($this->motion);

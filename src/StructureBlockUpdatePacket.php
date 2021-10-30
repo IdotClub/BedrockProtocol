@@ -26,30 +26,35 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 
 class StructureBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_BLOCK_UPDATE_PACKET;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var StructureEditorData */
-	public $structureEditorData;
-	/** @var bool */
-	public $isPowered;
+	public BlockPosition $blockPosition;
+	public StructureEditorData $structureEditorData;
+	public bool $isPowered;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(BlockPosition $blockPosition, StructureEditorData $structureEditorData, bool $isPowered) : self{
+		$result = new self;
+		$result->blockPosition = $blockPosition;
+		$result->structureEditorData = $structureEditorData;
+		$result->isPowered = $isPowered;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->blockPosition = $in->getBlockPosition();
 		$this->structureEditorData = $in->getStructureEditorData();
 		$this->isPowered = $in->getBool();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->putBlockPosition($this->blockPosition);
 		$out->putStructureEditorData($this->structureEditorData);
 		$out->putBool($this->isPowered);
 	}

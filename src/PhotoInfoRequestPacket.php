@@ -36,6 +36,9 @@ class PhotoInfoRequestPacket extends DataPacket{
 
 	private int $photoId;
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(int $photoId) : self{
 		$result = new self;
 		$result->photoId = $photoId;
@@ -43,11 +46,11 @@ class PhotoInfoRequestPacket extends DataPacket{
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->photoId = $in->getEntityUniqueId();
+		$this->photoId = $in->getActorUniqueId();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityUniqueId($this->photoId);
+		$out->putActorUniqueId($this->photoId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

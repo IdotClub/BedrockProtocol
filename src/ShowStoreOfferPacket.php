@@ -30,10 +30,18 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ShowStoreOfferPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SHOW_STORE_OFFER_PACKET;
 
-	/** @var string */
-	public $offerId;
-	/** @var bool */
-	public $showAll;
+	public string $offerId;
+	public bool $showAll;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(string $offerId, bool $showAll) : self{
+		$result = new self;
+		$result->offerId = $offerId;
+		$result->showAll = $showAll;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->offerId = $in->getString();

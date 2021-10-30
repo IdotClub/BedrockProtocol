@@ -31,28 +31,34 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
 
-	/** @var string */
-	public $packId;
-	/** @var int */
-	public $maxChunkSize;
-	/** @var int */
-	public $chunkCount;
-	/** @var int */
-	public $compressedPackSize;
-	/** @var string */
-	public $sha256;
-	/** @var bool */
-	public $isPremium = false;
-	/** @var int */
-	public $packType = ResourcePackType::RESOURCES; //TODO: check the values for this
+	public string $packId;
+	public int $maxChunkSize;
+	public int $chunkCount;
+	public int $compressedPackSize;
+	public string $sha256;
+	public bool $isPremium = false;
+	public int $packType = ResourcePackType::RESOURCES; //TODO: check the values for this
 
-	public static function create(string $packId, int $maxChunkSize, int $chunkCount, int $compressedPackSize, string $sha256sum) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(
+		string $packId,
+		int $maxChunkSize,
+		int $chunkCount,
+		int $compressedPackSize,
+		string $sha256,
+		bool $isPremium,
+		int $packType,
+	) : self{
 		$result = new self;
 		$result->packId = $packId;
 		$result->maxChunkSize = $maxChunkSize;
 		$result->chunkCount = $chunkCount;
 		$result->compressedPackSize = $compressedPackSize;
-		$result->sha256 = $sha256sum;
+		$result->sha256 = $sha256;
+		$result->isPremium = $isPremium;
+		$result->packType = $packType;
 		return $result;
 	}
 

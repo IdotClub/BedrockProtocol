@@ -31,28 +31,36 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
 
-	/** @var int|null */
-	public $entityUniqueId = null;
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var Vector3 */
-	public $position;
-	/** @var int */
-	public $direction;
-	/** @var string */
-	public $title;
+	public int $actorUniqueId;
+	public int $actorRuntimeId;
+	public Vector3 $position;
+	public int $direction;
+	public string $title;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorUniqueId, int $actorRuntimeId, Vector3 $position, int $direction, string $title) : self{
+		$result = new self;
+		$result->actorUniqueId = $actorUniqueId;
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->position = $position;
+		$result->direction = $direction;
+		$result->title = $title;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorUniqueId = $in->getActorUniqueId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->position = $in->getVector3();
 		$this->direction = $in->getVarInt();
 		$this->title = $in->getString();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorUniqueId($this->actorUniqueId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putVector3($this->position);
 		$out->putVarInt($this->direction);
 		$out->putString($this->title);

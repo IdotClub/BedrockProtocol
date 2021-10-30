@@ -33,27 +33,46 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ACTOR_PACKET;
 
-	/** @var int|null */
-	public $entityUniqueId = null; //TODO
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var ItemStackWrapper */
-	public $item;
-	/** @var Vector3 */
-	public $position;
-	/** @var Vector3|null */
-	public $motion;
+	public int $actorUniqueId;
+	public int $actorRuntimeId;
+	public ItemStackWrapper $item;
+	public Vector3 $position;
+	public ?Vector3 $motion = null;
 	/**
 	 * @var MetadataProperty[]
 	 * @phpstan-var array<int, MetadataProperty>
 	 */
-	public $metadata = [];
-	/** @var bool */
-	public $isFromFishing = false;
+	public array $metadata = [];
+	public bool $isFromFishing = false;
+
+	/**
+	 * @generate-create-func
+	 * @param MetadataProperty[] $metadata
+	 * @phpstan-param array<int, MetadataProperty> $metadata
+	 */
+	public static function create(
+		int $actorUniqueId,
+		int $actorRuntimeId,
+		ItemStackWrapper $item,
+		Vector3 $position,
+		?Vector3 $motion,
+		array $metadata,
+		bool $isFromFishing,
+	) : self{
+		$result = new self;
+		$result->actorUniqueId = $actorUniqueId;
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->item = $item;
+		$result->position = $position;
+		$result->motion = $motion;
+		$result->metadata = $metadata;
+		$result->isFromFishing = $isFromFishing;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorUniqueId = $in->getActorUniqueId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
 			$this->item = ItemStackWrapper::read($in);
 		}else{
@@ -66,8 +85,8 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorUniqueId($this->actorUniqueId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
 			$this->item->write($out);
 		}else{

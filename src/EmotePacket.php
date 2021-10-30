@@ -32,26 +32,23 @@ class EmotePacket extends DataPacket implements ClientboundPacket, ServerboundPa
 
 	public const FLAG_SERVER = 1 << 0;
 
-	/** @var int */
-	private $entityRuntimeId;
-	/** @var string */
-	private $emoteId;
-	/** @var int */
-	private $flags;
+	private int $actorRuntimeId;
+	private string $emoteId;
+	private int $flags;
 
-	public static function create(int $entityRuntimeId, string $emoteId, int $flags) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorRuntimeId, string $emoteId, int $flags) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
+		$result->actorRuntimeId = $actorRuntimeId;
 		$result->emoteId = $emoteId;
 		$result->flags = $flags;
 		return $result;
 	}
 
-	/**
-	 * TODO: we can't call this getEntityRuntimeId() because of base class collision (crap architecture, thanks Shoghi)
-	 */
-	public function getEntityRuntimeIdField() : int{
-		return $this->entityRuntimeId;
+	public function getActorRuntimeId() : int{
+		return $this->actorRuntimeId;
 	}
 
 	public function getEmoteId() : string{
@@ -63,13 +60,13 @@ class EmotePacket extends DataPacket implements ClientboundPacket, ServerboundPa
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->emoteId = $in->getString();
 		$this->flags = $in->getByte();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putString($this->emoteId);
 		$out->putByte($this->flags);
 	}

@@ -32,34 +32,31 @@ use function array_values;
 class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
 
-	/** @var int */
-	public $entityRuntimeId;
+	public int $actorRuntimeId;
 	/** @var Attribute[] */
-	public $entries = [];
-	/** @var int */
-	public $tick = 0;
+	public array $entries = [];
+	public int $tick = 0;
 
 	/**
-	 * @param Attribute[] $attributes
-	 *
-	 * @return UpdateAttributesPacket
+	 * @generate-create-func
+	 * @param Attribute[] $entries
 	 */
-	public static function create(int $entityRuntimeId, array $attributes, int $tick) : self{
+	public static function create(int $actorRuntimeId, array $entries, int $tick) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
-		$result->entries = $attributes;
+		$result->actorRuntimeId = $actorRuntimeId;
+		$result->entries = $entries;
 		$result->tick = $tick;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->entries = $in->getAttributeList();
 		$this->tick = $in->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putAttributeList(...array_values($this->entries));
 		$out->putUnsignedVarLong($this->tick);
 	}

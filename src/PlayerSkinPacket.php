@@ -32,19 +32,20 @@ use Ramsey\Uuid\UuidInterface;
 class PlayerSkinPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_SKIN_PACKET;
 
-	/** @var UuidInterface */
-	public $uuid;
-	/** @var string */
-	public $oldSkinName = "";
-	/** @var string */
-	public $newSkinName = "";
-	/** @var SkinData */
-	public $skin;
+	public UuidInterface $uuid;
+	public string $oldSkinName = "";
+	public string $newSkinName = "";
+	public SkinData $skin;
 
-	public static function create(UuidInterface $uuid, SkinData $skinData) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(UuidInterface $uuid, string $oldSkinName, string $newSkinName, SkinData $skin) : self{
 		$result = new self;
 		$result->uuid = $uuid;
-		$result->skin = $skinData;
+		$result->oldSkinName = $oldSkinName;
+		$result->newSkinName = $newSkinName;
+		$result->skin = $skin;
 		return $result;
 	}
 

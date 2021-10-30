@@ -33,18 +33,26 @@ class ShowCreditsPacket extends DataPacket implements ClientboundPacket, Serverb
 	public const STATUS_START_CREDITS = 0;
 	public const STATUS_END_CREDITS = 1;
 
-	/** @var int */
-	public $playerEid;
-	/** @var int */
-	public $status;
+	public int $playerActorRuntimeId;
+	public int $status;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $playerActorRuntimeId, int $status) : self{
+		$result = new self;
+		$result->playerActorRuntimeId = $playerActorRuntimeId;
+		$result->status = $status;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->playerEid = $in->getEntityRuntimeId();
+		$this->playerActorRuntimeId = $in->getActorRuntimeId();
 		$this->status = $in->getVarInt();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->playerEid);
+		$out->putActorRuntimeId($this->playerActorRuntimeId);
 		$out->putVarInt($this->status);
 	}
 

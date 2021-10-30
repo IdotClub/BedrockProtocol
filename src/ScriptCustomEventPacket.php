@@ -30,10 +30,19 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ScriptCustomEventPacket extends DataPacket{ //TODO: this doesn't have handlers in either client or server in the game as of 1.8
 	public const NETWORK_ID = ProtocolInfo::SCRIPT_CUSTOM_EVENT_PACKET;
 
-	/** @var string */
-	public $eventName;
+	public string $eventName;
 	/** @var string json data */
-	public $eventData;
+	public string $eventData;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(string $eventName, string $eventData) : self{
+		$result = new self;
+		$result->eventName = $eventName;
+		$result->eventData = $eventData;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->eventName = $in->getString();

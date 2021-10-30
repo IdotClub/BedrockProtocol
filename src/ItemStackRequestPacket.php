@@ -33,9 +33,10 @@ class ItemStackRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ITEM_STACK_REQUEST_PACKET;
 
 	/** @var ItemStackRequest[] */
-	private $requests;
+	private array $requests;
 
 	/**
+	 * @generate-create-func
 	 * @param ItemStackRequest[] $requests
 	 */
 	public static function create(array $requests) : self{

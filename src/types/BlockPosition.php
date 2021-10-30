@@ -21,27 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\math\Vector3;
 
-trait CraftRecipeStackRequestActionTrait{
+final class BlockPosition{
 
-	/** @var int */
-	private $recipeId;
+	public function __construct(
+		private int $x,
+		private int $y,
+		private int $z
+	){}
 
-	final public function __construct(int $recipeId){
-		$this->recipeId = $recipeId;
+	public function getX() : int{ return $this->x; }
+
+	public function getY() : int{ return $this->y; }
+
+	public function getZ() : int{ return $this->z; }
+
+	public static function fromVector3(Vector3 $vector3) : self{
+		return new self($vector3->getFloorX(), $vector3->getFloorY(), $vector3->getFloorZ());
 	}
 
-	public function getRecipeId() : int{ return $this->recipeId; }
-
-	public static function read(PacketSerializer $in) : self{
-		$recipeId = $in->readGenericTypeNetworkId();
-		return new self($recipeId);
-	}
-
-	public function write(PacketSerializer $out) : void{
-		$out->writeGenericTypeNetworkId($this->recipeId);
+	public function equals(BlockPosition $other) : bool{
+		return $this->x === $other->x && $this->y === $other->y && $this->z === $other->z;
 	}
 }

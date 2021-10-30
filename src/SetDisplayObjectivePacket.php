@@ -37,16 +37,24 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	public const SORT_ORDER_ASCENDING = 0;
 	public const SORT_ORDER_DESCENDING = 1;
 
-	/** @var string */
-	public $displaySlot;
-	/** @var string */
-	public $objectiveName;
-	/** @var string */
-	public $displayName;
-	/** @var string */
-	public $criteriaName;
-	/** @var int */
-	public $sortOrder;
+	public string $displaySlot;
+	public string $objectiveName;
+	public string $displayName;
+	public string $criteriaName;
+	public int $sortOrder;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(string $displaySlot, string $objectiveName, string $displayName, string $criteriaName, int $sortOrder) : self{
+		$result = new self;
+		$result->displaySlot = $displaySlot;
+		$result->objectiveName = $objectiveName;
+		$result->displayName = $displayName;
+		$result->criteriaName = $criteriaName;
+		$result->sortOrder = $sortOrder;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->displaySlot = $in->getString();

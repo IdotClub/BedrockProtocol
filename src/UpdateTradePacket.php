@@ -34,37 +34,55 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 
 	//TODO: find fields
 
-	/** @var int */
-	public $windowId;
-	/** @var int */
-	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
-	/** @var int */
-	public $windowSlotCount = 0; //useless, seems to be part of a standard container header
-	/** @var int */
-	public $tradeTier;
-	/** @var int */
-	public $traderEid;
-	/** @var int */
-	public $playerEid;
-	/** @var string */
-	public $displayName;
-	/** @var bool */
-	public $isV2Trading;
-	/** @var bool */
-	public $isWilling;
+	public int $windowId;
+	public int $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
+	public int $windowSlotCount = 0; //useless, seems to be part of a standard container header
+	public int $tradeTier;
+	public int $traderActorUniqueId;
+	public int $playerActorUniqueId;
+	public string $displayName;
+	public bool $isV2Trading;
+	public bool $isWilling;
+	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag> */
+	public CacheableNbt $offers;
+
 	/**
-	 * @var CacheableNbt
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 * @generate-create-func
+	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $offers
 	 */
-	public $offers;
+	public static function create(
+		int $windowId,
+		int $windowType,
+		int $windowSlotCount,
+		int $tradeTier,
+		int $traderActorUniqueId,
+		int $playerActorUniqueId,
+		string $displayName,
+		bool $isV2Trading,
+		bool $isWilling,
+		CacheableNbt $offers,
+	) : self{
+		$result = new self;
+		$result->windowId = $windowId;
+		$result->windowType = $windowType;
+		$result->windowSlotCount = $windowSlotCount;
+		$result->tradeTier = $tradeTier;
+		$result->traderActorUniqueId = $traderActorUniqueId;
+		$result->playerActorUniqueId = $playerActorUniqueId;
+		$result->displayName = $displayName;
+		$result->isV2Trading = $isV2Trading;
+		$result->isWilling = $isWilling;
+		$result->offers = $offers;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->windowId = $in->getByte();
 		$this->windowType = $in->getByte();
 		$this->windowSlotCount = $in->getVarInt();
 		$this->tradeTier = $in->getVarInt();
-		$this->traderEid = $in->getEntityUniqueId();
-		$this->playerEid = $in->getEntityUniqueId();
+		$this->traderActorUniqueId = $in->getActorUniqueId();
+		$this->playerActorUniqueId = $in->getActorUniqueId();
 		$this->displayName = $in->getString();
 		$this->isV2Trading = $in->getBool();
 		$this->isWilling = $in->getBool();
@@ -76,8 +94,8 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$out->putByte($this->windowType);
 		$out->putVarInt($this->windowSlotCount);
 		$out->putVarInt($this->tradeTier);
-		$out->putEntityUniqueId($this->traderEid);
-		$out->putEntityUniqueId($this->playerEid);
+		$out->putActorUniqueId($this->traderActorUniqueId);
+		$out->putActorUniqueId($this->playerActorUniqueId);
 		$out->putString($this->displayName);
 		$out->putBool($this->isV2Trading);
 		$out->putBool($this->isWilling);

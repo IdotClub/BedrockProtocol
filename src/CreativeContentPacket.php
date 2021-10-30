@@ -33,9 +33,10 @@ class CreativeContentPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CREATIVE_CONTENT_PACKET;
 
 	/** @var CreativeContentEntry[] */
-	private $entries;
+	private array $entries;
 
 	/**
+	 * @generate-create-func
 	 * @param CreativeContentEntry[] $entries
 	 */
 	public static function create(array $entries) : self{

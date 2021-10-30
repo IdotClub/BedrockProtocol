@@ -30,12 +30,14 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class SetDefaultGameTypePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_DEFAULT_GAME_TYPE_PACKET;
 
-	/** @var int */
-	public $gamemode;
+	public int $gamemode;
 
-	public static function create(int $gameMode) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $gamemode) : self{
 		$result = new self;
-		$result->gamemode = $gameMode;
+		$result->gamemode = $gamemode;
 		return $result;
 	}
 

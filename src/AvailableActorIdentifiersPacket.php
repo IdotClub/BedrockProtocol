@@ -31,18 +31,16 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 class AvailableActorIdentifiersPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::AVAILABLE_ACTOR_IDENTIFIERS_PACKET;
 
-	/**
-	 * @var CacheableNbt
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
-	 */
-	public $identifiers;
+	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag> */
+	public CacheableNbt $identifiers;
 
 	/**
-	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $nbt
+	 * @generate-create-func
+	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $identifiers
 	 */
-	public static function create(CacheableNbt $nbt) : self{
+	public static function create(CacheableNbt $identifiers) : self{
 		$result = new self;
-		$result->identifiers = $nbt;
+		$result->identifiers = $identifiers;
 		return $result;
 	}
 

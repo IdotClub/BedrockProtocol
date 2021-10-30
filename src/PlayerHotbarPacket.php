@@ -31,18 +31,18 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
 
-	/** @var int */
-	public $selectedHotbarSlot;
-	/** @var int */
-	public $windowId = ContainerIds::INVENTORY;
-	/** @var bool */
-	public $selectHotbarSlot = true;
+	public int $selectedHotbarSlot;
+	public int $windowId = ContainerIds::INVENTORY;
+	public bool $selectHotbarSlot = true;
 
-	public static function create(int $slot, int $windowId, bool $selectSlot = true) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $selectedHotbarSlot, int $windowId, bool $selectHotbarSlot) : self{
 		$result = new self;
-		$result->selectedHotbarSlot = $slot;
+		$result->selectedHotbarSlot = $selectedHotbarSlot;
 		$result->windowId = $windowId;
-		$result->selectHotbarSlot = $selectSlot;
+		$result->selectHotbarSlot = $selectHotbarSlot;
 		return $result;
 	}
 

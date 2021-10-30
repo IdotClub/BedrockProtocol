@@ -30,8 +30,16 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class RequestChunkRadiusPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::REQUEST_CHUNK_RADIUS_PACKET;
 
-	/** @var int */
-	public $radius;
+	public int $radius;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $radius) : self{
+		$result = new self;
+		$result->radius = $radius;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->radius = $in->getVarInt();

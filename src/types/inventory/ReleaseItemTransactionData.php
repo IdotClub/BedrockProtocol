@@ -32,14 +32,10 @@ class ReleaseItemTransactionData extends TransactionData{
 	public const ACTION_RELEASE = 0; //bow shoot
 	public const ACTION_CONSUME = 1; //eat food, drink potion
 
-	/** @var int */
-	private $actionType;
-	/** @var int */
-	private $hotbarSlot;
-	/** @var ItemStackWrapper */
-	private $itemInHand;
-	/** @var Vector3 */
-	private $headPos;
+	private int $actionType;
+	private int $hotbarSlot;
+	private ItemStackWrapper $itemInHand;
+	private Vector3 $headPosition;
 
 	public function getActionType() : int{
 		return $this->actionType;
@@ -53,8 +49,8 @@ class ReleaseItemTransactionData extends TransactionData{
 		return $this->itemInHand;
 	}
 
-	public function getHeadPos() : Vector3{
-		return $this->headPos;
+	public function getHeadPosition() : Vector3{
+		return $this->headPosition;
 	}
 
 	public function getTypeId() : int{
@@ -69,7 +65,7 @@ class ReleaseItemTransactionData extends TransactionData{
 		}else{
 			$this->itemInHand = ItemStackWrapper::legacy($stream->getItemStackWithoutStackId());
 		}
-		$this->headPos = $stream->getVector3();
+		$this->headPosition = $stream->getVector3();
 	}
 
 	protected function encodeData(PacketSerializer $stream) : void{
@@ -80,19 +76,19 @@ class ReleaseItemTransactionData extends TransactionData{
 		}else{
 			$stream->putItemStackWithoutStackId($this->itemInHand->getItemStack());
 		}
-		$stream->putVector3($this->headPos);
+		$stream->putVector3($this->headPosition);
 	}
 
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $actionType, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $headPos) : self{
+	public static function new(array $actions, int $actionType, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $headPosition) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->actionType = $actionType;
 		$result->hotbarSlot = $hotbarSlot;
 		$result->itemInHand = $itemInHand;
-		$result->headPos = $headPos;
+		$result->headPosition = $headPosition;
 
 		return $result;
 	}

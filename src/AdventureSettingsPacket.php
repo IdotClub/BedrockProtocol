@@ -64,18 +64,26 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 	public const BUILD = 0x100 | self::BITFLAG_SECOND_SET;
 	public const DEFAULT = 0x200 | self::BITFLAG_SECOND_SET;
 
-	/** @var int */
-	public $flags = 0;
-	/** @var int */
-	public $commandPermission = self::PERMISSION_NORMAL;
-	/** @var int */
-	public $flags2 = -1;
-	/** @var int */
-	public $playerPermission = PlayerPermissions::MEMBER;
-	/** @var int */
-	public $customFlags = 0; //...
-	/** @var int */
-	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
+	public int $flags = 0;
+	public int $commandPermission = self::PERMISSION_NORMAL;
+	public int $flags2 = -1;
+	public int $playerPermission = PlayerPermissions::MEMBER;
+	public int $customFlags = 0; //...
+	public int $targetActorUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $flags, int $commandPermission, int $flags2, int $playerPermission, int $customFlags, int $targetActorUniqueId) : self{
+		$result = new self;
+		$result->flags = $flags;
+		$result->commandPermission = $commandPermission;
+		$result->flags2 = $flags2;
+		$result->playerPermission = $playerPermission;
+		$result->customFlags = $customFlags;
+		$result->targetActorUniqueId = $targetActorUniqueId;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->flags = $in->getUnsignedVarInt();
@@ -83,7 +91,7 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 		$this->flags2 = $in->getUnsignedVarInt();
 		$this->playerPermission = $in->getUnsignedVarInt();
 		$this->customFlags = $in->getUnsignedVarInt();
-		$this->entityUniqueId = $in->getLLong();
+		$this->targetActorUniqueId = $in->getLLong();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -92,7 +100,7 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 		$out->putUnsignedVarInt($this->flags2);
 		$out->putUnsignedVarInt($this->playerPermission);
 		$out->putUnsignedVarInt($this->customFlags);
-		$out->putLLong($this->entityUniqueId);
+		$out->putLLong($this->targetActorUniqueId);
 	}
 
 	public function getFlag(int $flag) : bool{

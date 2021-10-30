@@ -33,21 +33,33 @@ use function count;
 class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CRAFTING_EVENT_PACKET;
 
-	/** @var int */
-	public $windowId;
-	/** @var int */
-	public $type;
-	/** @var UuidInterface */
-	public $id;
+	public int $windowId;
+	public int $windowType;
+	public UuidInterface $recipeUUID;
 	/** @var ItemStackWrapper[] */
-	public $input = [];
+	public array $input = [];
 	/** @var ItemStackWrapper[] */
-	public $output = [];
+	public array $output = [];
+
+	/**
+	 * @generate-create-func
+	 * @param ItemStackWrapper[] $input
+	 * @param ItemStackWrapper[] $output
+	 */
+	public static function create(int $windowId, int $windowType, UuidInterface $recipeUUID, array $input, array $output) : self{
+		$result = new self;
+		$result->windowId = $windowId;
+		$result->windowType = $windowType;
+		$result->recipeUUID = $recipeUUID;
+		$result->input = $input;
+		$result->output = $output;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->windowId = $in->getByte();
-		$this->type = $in->getVarInt();
-		$this->id = $in->getUUID();
+		$this->windowType = $in->getVarInt();
+		$this->recipeUUID = $in->getUUID();
 
 		$size = $in->getUnsignedVarInt();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
@@ -74,8 +86,8 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->windowId);
-		$out->putVarInt($this->type);
-		$out->putUUID($this->id);
+		$out->putVarInt($this->windowType);
+		$out->putUUID($this->recipeUUID);
 
 		$out->putUnsignedVarInt(count($this->input));
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){

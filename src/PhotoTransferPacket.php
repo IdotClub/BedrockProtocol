@@ -30,20 +30,36 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
 
-	/** @var string */
-	public $photoName;
-	/** @var string */
-	public $photoData;
-	/** @var string */
-	public $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
-	/** @var int */
-	public $type;
-	/** @var int */
-	public $sourceType;
-	/** @var int */
-	public $ownerEntityUniqueId;
-	/** @var string */
-	public $newPhotoName; //???
+	public string $photoName;
+	public string $photoData;
+	public string $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
+	public int $type;
+	public int $sourceType;
+	public int $ownerActorUniqueId;
+	public string $newPhotoName; //???
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(
+		string $photoName,
+		string $photoData,
+		string $bookId,
+		int $type,
+		int $sourceType,
+		int $ownerActorUniqueId,
+		string $newPhotoName,
+	) : self{
+		$result = new self;
+		$result->photoName = $photoName;
+		$result->photoData = $photoData;
+		$result->bookId = $bookId;
+		$result->type = $type;
+		$result->sourceType = $sourceType;
+		$result->ownerActorUniqueId = $ownerActorUniqueId;
+		$result->newPhotoName = $newPhotoName;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->photoName = $in->getString();
@@ -52,7 +68,7 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$this->type = $in->getByte();
 			$this->sourceType = $in->getByte();
-			$this->ownerEntityUniqueId = $in->getLLong(); //...............
+			$this->ownerActorUniqueId = $in->getLLong(); //...............
 			$this->newPhotoName = $in->getString();
 		}
 	}
@@ -64,7 +80,7 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$out->putByte($this->type);
 			$out->putByte($this->sourceType);
-			$out->putLLong($this->ownerEntityUniqueId);
+			$out->putLLong($this->ownerActorUniqueId);
 			$out->putString($this->newPhotoName);
 		}
 	}

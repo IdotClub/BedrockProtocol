@@ -26,53 +26,38 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 
 class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
 
-	/** @var bool */
-	public $isBlock;
+	public bool $isBlock;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var int */
-	public $commandBlockMode;
-	/** @var bool */
-	public $isRedstoneMode;
-	/** @var bool */
-	public $isConditional;
+	public BlockPosition $blockPosition;
+	public int $commandBlockMode;
+	public bool $isRedstoneMode;
+	public bool $isConditional;
 
-	/** @var int */
-	public $minecartEid;
+	public int $minecartActorRuntimeId;
 
-	/** @var string */
-	public $command;
-	/** @var string */
-	public $lastOutput;
-	/** @var string */
-	public $name;
-	/** @var bool */
-	public $shouldTrackOutput;
-	/** @var int */
-	public $tickDelay;
-	/** @var bool */
-	public $executeOnFirstTick;
+	public string $command;
+	public string $lastOutput;
+	public string $name;
+	public bool $shouldTrackOutput;
+	public int $tickDelay;
+	public bool $executeOnFirstTick;
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->isBlock = $in->getBool();
 
 		if($this->isBlock){
-			$in->getBlockPosition($this->x, $this->y, $this->z);
+			$this->blockPosition = $in->getBlockPosition();
 			$this->commandBlockMode = $in->getUnsignedVarInt();
 			$this->isRedstoneMode = $in->getBool();
 			$this->isConditional = $in->getBool();
 		}else{
 			//Minecart with command block
-			$this->minecartEid = $in->getEntityRuntimeId();
+			$this->minecartActorRuntimeId = $in->getActorRuntimeId();
 		}
 
 		$this->command = $in->getString();
@@ -88,12 +73,12 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 		$out->putBool($this->isBlock);
 
 		if($this->isBlock){
-			$out->putBlockPosition($this->x, $this->y, $this->z);
+			$out->putBlockPosition($this->blockPosition);
 			$out->putUnsignedVarInt($this->commandBlockMode);
 			$out->putBool($this->isRedstoneMode);
 			$out->putBool($this->isConditional);
 		}else{
-			$out->putEntityRuntimeId($this->minecartEid);
+			$out->putActorRuntimeId($this->minecartActorRuntimeId);
 		}
 
 		$out->putString($this->command);

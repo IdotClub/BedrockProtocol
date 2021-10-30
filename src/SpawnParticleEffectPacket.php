@@ -32,25 +32,33 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 class SpawnParticleEffectPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SPAWN_PARTICLE_EFFECT_PACKET;
 
-	/** @var int */
-	public $dimensionId = DimensionIds::OVERWORLD; //wtf mojang
-	/** @var int */
-	public $entityUniqueId = -1; //default none
-	/** @var Vector3 */
-	public $position;
-	/** @var string */
-	public $particleName;
+	public int $dimensionId = DimensionIds::OVERWORLD; //wtf mojang
+	public int $actorUniqueId = -1; //default none
+	public Vector3 $position;
+	public string $particleName;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $dimensionId, int $actorUniqueId, Vector3 $position, string $particleName) : self{
+		$result = new self;
+		$result->dimensionId = $dimensionId;
+		$result->actorUniqueId = $actorUniqueId;
+		$result->position = $position;
+		$result->particleName = $particleName;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->dimensionId = $in->getByte();
-		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->actorUniqueId = $in->getActorUniqueId();
 		$this->position = $in->getVector3();
 		$this->particleName = $in->getString();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->dimensionId);
-		$out->putEntityUniqueId($this->entityUniqueId);
+		$out->putActorUniqueId($this->actorUniqueId);
 		$out->putVector3($this->position);
 		$out->putString($this->particleName);
 	}

@@ -32,15 +32,13 @@ use function count;
 class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
 
-	/** @var int */
-	public $windowId;
+	public int $windowId;
 	/** @var ItemStackWrapper[] */
-	public $items = [];
+	public array $items = [];
 
 	/**
+	 * @generate-create-func
 	 * @param ItemStackWrapper[] $items
-	 *
-	 * @return InventoryContentPacket
 	 */
 	public static function create(int $windowId, array $items) : self{
 		$result = new self;

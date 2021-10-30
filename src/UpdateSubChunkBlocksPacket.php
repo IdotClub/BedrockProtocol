@@ -26,15 +26,14 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\UpdateSubChunkBlocksPacketEntry;
 use function count;
 
 class UpdateSubChunkBlocksPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_SUB_CHUNK_BLOCKS_PACKET;
 
-	private int $subChunkX;
-	private int $subChunkY;
-	private int $subChunkZ;
+	private BlockPosition $baseBlockPosition;
 
 	/** @var UpdateSubChunkBlocksPacketEntry[] */
 	private array $layer0Updates;
@@ -42,24 +41,19 @@ class UpdateSubChunkBlocksPacket extends DataPacket implements ClientboundPacket
 	private array $layer1Updates;
 
 	/**
-	 * @param UpdateSubChunkBlocksPacketEntry[] $layer0
-	 * @param UpdateSubChunkBlocksPacketEntry[] $layer1
+	 * @generate-create-func
+	 * @param UpdateSubChunkBlocksPacketEntry[] $layer0Updates
+	 * @param UpdateSubChunkBlocksPacketEntry[] $layer1Updates
 	 */
-	public static function create(int $subChunkX, int $subChunkY, int $subChunkZ, array $layer0, array $layer1) : self{
+	public static function create(BlockPosition $baseBlockPosition, array $layer0Updates, array $layer1Updates) : self{
 		$result = new self;
-		$result->subChunkX = $subChunkX;
-		$result->subChunkY = $subChunkY;
-		$result->subChunkZ = $subChunkZ;
-		$result->layer0Updates = $layer0;
-		$result->layer1Updates = $layer1;
+		$result->baseBlockPosition = $baseBlockPosition;
+		$result->layer0Updates = $layer0Updates;
+		$result->layer1Updates = $layer1Updates;
 		return $result;
 	}
 
-	public function getSubChunkX() : int{ return $this->subChunkX; }
-
-	public function getSubChunkY() : int{ return $this->subChunkY; }
-
-	public function getSubChunkZ() : int{ return $this->subChunkZ; }
+	public function getBaseBlockPosition() : BlockPosition{ return $this->baseBlockPosition; }
 
 	/** @return UpdateSubChunkBlocksPacketEntry[] */
 	public function getLayer0Updates() : array{ return $this->layer0Updates; }
@@ -68,8 +62,7 @@ class UpdateSubChunkBlocksPacket extends DataPacket implements ClientboundPacket
 	public function getLayer1Updates() : array{ return $this->layer1Updates; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->subChunkX = $this->subChunkY = $this->subChunkZ = 0;
-		$in->getBlockPosition($this->subChunkX, $this->subChunkY, $this->subChunkZ);
+		$this->baseBlockPosition = $in->getBlockPosition();
 		$this->layer0Updates = [];
 		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
 			$this->layer0Updates[] = UpdateSubChunkBlocksPacketEntry::read($in);
@@ -80,7 +73,7 @@ class UpdateSubChunkBlocksPacket extends DataPacket implements ClientboundPacket
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putBlockPosition($this->subChunkX, $this->subChunkY, $this->subChunkZ);
+		$out->putBlockPosition($this->baseBlockPosition);
 		$out->putUnsignedVarInt(count($this->layer0Updates));
 		foreach($this->layer0Updates as $update){
 			$update->write($out);

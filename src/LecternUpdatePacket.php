@@ -26,34 +26,39 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 
 class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LECTERN_UPDATE_PACKET;
 
-	/** @var int */
-	public $page;
-	/** @var int */
-	public $totalPages;
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var bool */
-	public $dropBook;
+	public int $page;
+	public int $totalPages;
+	public BlockPosition $blockPosition;
+	public bool $dropBook;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $page, int $totalPages, BlockPosition $blockPosition, bool $dropBook) : self{
+		$result = new self;
+		$result->page = $page;
+		$result->totalPages = $totalPages;
+		$result->blockPosition = $blockPosition;
+		$result->dropBook = $dropBook;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->page = $in->getByte();
 		$this->totalPages = $in->getByte();
-		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->blockPosition = $in->getBlockPosition();
 		$this->dropBook = $in->getBool();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->page);
 		$out->putByte($this->totalPages);
-		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->putBlockPosition($this->blockPosition);
 		$out->putBool($this->dropBook);
 	}
 

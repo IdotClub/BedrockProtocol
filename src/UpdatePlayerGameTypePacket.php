@@ -31,34 +31,32 @@ use pocketmine\network\mcpe\protocol\types\GameMode;
 class UpdatePlayerGameTypePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_PLAYER_GAME_TYPE_PACKET;
 
+	/** @see GameMode */
+	private int $gameMode;
+	private int $playerActorUniqueId;
+
 	/**
-	 * @var int
-	 * @see GameMode
+	 * @generate-create-func
 	 */
-	private $gameMode;
-
-	/** @var int */
-	private $playerEntityUniqueId;
-
-	public static function create(int $gameMode, int $playerEntityUniqueId) : self{
+	public static function create(int $gameMode, int $playerActorUniqueId) : self{
 		$result = new self;
 		$result->gameMode = $gameMode;
-		$result->playerEntityUniqueId = $playerEntityUniqueId;
+		$result->playerActorUniqueId = $playerActorUniqueId;
 		return $result;
 	}
 
 	public function getGameMode() : int{ return $this->gameMode; }
 
-	public function getPlayerEntityUniqueId() : int{ return $this->playerEntityUniqueId; }
+	public function getPlayerActorUniqueId() : int{ return $this->playerActorUniqueId; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->gameMode = $in->getVarInt();
-		$this->playerEntityUniqueId = $in->getEntityUniqueId();
+		$this->playerActorUniqueId = $in->getActorUniqueId();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->gameMode);
-		$out->putEntityUniqueId($this->playerEntityUniqueId);
+		$out->putActorUniqueId($this->playerActorUniqueId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

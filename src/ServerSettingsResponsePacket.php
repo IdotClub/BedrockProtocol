@@ -30,10 +30,18 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ServerSettingsResponsePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_RESPONSE_PACKET;
 
-	/** @var int */
-	public $formId;
-	/** @var string */
-	public $formData; //json
+	public int $formId;
+	public string $formData; //json
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $formId, string $formData) : self{
+		$result = new self;
+		$result->formId = $formId;
+		$result->formData = $formData;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->formId = $in->getUnsignedVarInt();

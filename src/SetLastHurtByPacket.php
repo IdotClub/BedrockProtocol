@@ -30,8 +30,16 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class SetLastHurtByPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_LAST_HURT_BY_PACKET;
 
-	/** @var int */
-	public $entityTypeId;
+	public int $entityTypeId;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $entityTypeId) : self{
+		$result = new self;
+		$result->entityTypeId = $entityTypeId;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityTypeId = $in->getVarInt();

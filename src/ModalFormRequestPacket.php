@@ -30,11 +30,12 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ModalFormRequestPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MODAL_FORM_REQUEST_PACKET;
 
-	/** @var int */
-	public $formId;
-	/** @var string */
-	public $formData; //json
+	public int $formId;
+	public string $formData; //json
 
+	/**
+	 * @generate-create-func
+	 */
 	public static function create(int $formId, string $formData) : self{
 		$result = new self;
 		$result->formId = $formId;

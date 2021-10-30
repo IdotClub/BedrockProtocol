@@ -31,33 +31,29 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_ARMOR_EQUIPMENT_PACKET;
 
-	/** @var int */
-	public $entityRuntimeId;
+	public int $actorRuntimeId;
 
 	//this intentionally doesn't use an array because we don't want any implicit dependencies on internal order
+	public ItemStackWrapper $head;
+	public ItemStackWrapper $chest;
+	public ItemStackWrapper $legs;
+	public ItemStackWrapper $feet;
 
-	/** @var ItemStackWrapper */
-	public $head;
-	/** @var ItemStackWrapper */
-	public $chest;
-	/** @var ItemStackWrapper */
-	public $legs;
-	/** @var ItemStackWrapper */
-	public $feet;
-
-	public static function create(int $entityRuntimeId, ItemStackWrapper $head, ItemStackWrapper $chest, ItemStackWrapper $legs, ItemStackWrapper $feet) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorRuntimeId, ItemStackWrapper $head, ItemStackWrapper $chest, ItemStackWrapper $legs, ItemStackWrapper $feet) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
+		$result->actorRuntimeId = $actorRuntimeId;
 		$result->head = $head;
 		$result->chest = $chest;
 		$result->legs = $legs;
 		$result->feet = $feet;
-
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->actorRuntimeId = $in->getActorRuntimeId();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
 			$this->head = ItemStackWrapper::read($in);
 			$this->chest = ItemStackWrapper::read($in);
@@ -72,7 +68,7 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putActorRuntimeId($this->actorRuntimeId);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
 			$this->head->write($out);
 			$this->chest->write($out);

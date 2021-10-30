@@ -33,15 +33,13 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_MISS_RESPONSE_PACKET;
 
 	/** @var ChunkCacheBlob[] */
-	private $blobs = [];
+	private array $blobs = [];
 
 	/**
+	 * @generate-create-func
 	 * @param ChunkCacheBlob[] $blobs
 	 */
 	public static function create(array $blobs) : self{
-		//type check
-		(static function(ChunkCacheBlob ...$blobs) : void{})(...$blobs);
-
 		$result = new self;
 		$result->blobs = $blobs;
 		return $result;

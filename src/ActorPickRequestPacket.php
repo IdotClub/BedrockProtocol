@@ -30,15 +30,23 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
 
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
-	/** @var bool */
-	public $addUserData;
+	public int $actorUniqueId;
+	public int $hotbarSlot;
+	public bool $addUserData;
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $actorUniqueId, int $hotbarSlot, bool $addUserData) : self{
+		$result = new self;
+		$result->actorUniqueId = $actorUniqueId;
+		$result->hotbarSlot = $hotbarSlot;
+		$result->addUserData = $addUserData;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityUniqueId = $in->getLLong();
+		$this->actorUniqueId = $in->getLLong();
 		$this->hotbarSlot = $in->getByte();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$this->addUserData = $in->getBool();
@@ -46,7 +54,7 @@ class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putLLong($this->entityUniqueId);
+		$out->putLLong($this->actorUniqueId);
 		$out->putByte($this->hotbarSlot);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$out->putBool($this->addUserData);

@@ -40,18 +40,36 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	public const TYPE_SET_SUBTITLE_JSON = 7;
 	public const TYPE_SET_ACTIONBAR_MESSAGE_JSON = 8;
 
-	/** @var int */
-	public $type;
-	/** @var string */
-	public $text = "";
-	/** @var int */
-	public $fadeInTime = 0;
-	/** @var int */
-	public $stayTime = 0;
-	/** @var int */
-	public $fadeOutTime = 0;
+	public int $type;
+	public string $text = "";
+	public int $fadeInTime = 0;
+	public int $stayTime = 0;
+	public int $fadeOutTime = 0;
 	public string $xuid = "";
 	public string $platformOnlineId = "";
+
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(
+		int $type,
+		string $text,
+		int $fadeInTime,
+		int $stayTime,
+		int $fadeOutTime,
+		string $xuid,
+		string $platformOnlineId,
+	) : self{
+		$result = new self;
+		$result->type = $type;
+		$result->text = $text;
+		$result->fadeInTime = $fadeInTime;
+		$result->stayTime = $stayTime;
+		$result->fadeOutTime = $fadeOutTime;
+		$result->xuid = $xuid;
+		$result->platformOnlineId = $platformOnlineId;
+		return $result;
+	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->type = $in->getVarInt();

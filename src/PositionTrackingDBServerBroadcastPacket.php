@@ -35,17 +35,13 @@ class PositionTrackingDBServerBroadcastPacket extends DataPacket implements Clie
 	public const ACTION_DESTROY = 1;
 	public const ACTION_NOT_FOUND = 2;
 
-	/** @var int */
-	private $action;
-	/** @var int */
-	private $trackingId;
-	/**
-	 * @var CacheableNbt
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
-	 */
-	private $nbt;
+	private int $action;
+	private int $trackingId;
+	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag> */
+	private CacheableNbt $nbt;
 
 	/**
+	 * @generate-create-func
 	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $nbt
 	 */
 	public static function create(int $action, int $trackingId, CacheableNbt $nbt) : self{

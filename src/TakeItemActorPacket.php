@@ -30,26 +30,27 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class TakeItemActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ACTOR_PACKET;
 
-	/** @var int */
-	public $target;
-	/** @var int */
-	public $eid;
+	public int $takerActorRuntimeId;
+	public int $itemActorRuntimeId;
 
-	public static function create(int $takerEntityRuntimeId, int $itemEntityRuntimeId) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $takerActorRuntimeId, int $itemActorRuntimeId) : self{
 		$result = new self;
-		$result->target = $itemEntityRuntimeId;
-		$result->eid = $takerEntityRuntimeId;
+		$result->takerActorRuntimeId = $takerActorRuntimeId;
+		$result->itemActorRuntimeId = $itemActorRuntimeId;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->target = $in->getEntityRuntimeId();
-		$this->eid = $in->getEntityRuntimeId();
+		$this->itemActorRuntimeId = $in->getActorRuntimeId();
+		$this->takerActorRuntimeId = $in->getActorRuntimeId();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->target);
-		$out->putEntityRuntimeId($this->eid);
+		$out->putActorRuntimeId($this->itemActorRuntimeId);
+		$out->putActorRuntimeId($this->takerActorRuntimeId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

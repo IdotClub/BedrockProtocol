@@ -56,15 +56,12 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 	public const TYPE_TARGET_BLOCK_HIT = 23;
 	public const TYPE_PIGLIN_BARTER = 24;
 
-	/** @var int */
-	public $playerRuntimeId;
-	/** @var int */
-	public $eventData;
-	/** @var int */
-	public $type;
+	public int $playerRuntimeId;
+	public int $eventData;
+	public int $type;
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->playerRuntimeId = $in->getEntityRuntimeId();
+		$this->playerRuntimeId = $in->getActorRuntimeId();
 		$this->eventData = $in->getVarInt();
 		$this->type = $in->getByte();
 
@@ -72,7 +69,7 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->playerRuntimeId);
+		$out->putActorRuntimeId($this->playerRuntimeId);
 		$out->putVarInt($this->eventData);
 		$out->putByte($this->type);
 

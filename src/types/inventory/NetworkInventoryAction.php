@@ -65,20 +65,13 @@ class NetworkInventoryAction{
 	public const ACTION_MAGIC_SLOT_DROP_ITEM = 0;
 	public const ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
 
-	/** @var int */
-	public $sourceType;
-	/** @var int */
-	public $windowId;
-	/** @var int */
-	public $sourceFlags = 0;
-	/** @var int */
-	public $inventorySlot;
-	/** @var ItemStackWrapper */
-	public $oldItem;
-	/** @var ItemStackWrapper */
-	public $newItem;
-	/** @var int|null */
-	public $newItemStackId = null;
+	public int $sourceType;
+	public int $windowId;
+	public int $sourceFlags = 0;
+	public int $inventorySlot;
+	public ItemStackWrapper $oldItem;
+	public ItemStackWrapper $newItem;
+	public ?int $newItemStackId = null;
 
 	/**
 	 * @return $this

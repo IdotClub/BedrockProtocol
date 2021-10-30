@@ -27,35 +27,28 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 
 class UseItemTransactionData extends TransactionData{
 	public const ACTION_CLICK_BLOCK = 0;
 	public const ACTION_CLICK_AIR = 1;
 	public const ACTION_BREAK_BLOCK = 2;
 
-	/** @var int */
-	private $actionType;
-	/** @var Vector3 */
-	private $blockPos;
-	/** @var int */
-	private $face;
-	/** @var int */
-	private $hotbarSlot;
-	/** @var ItemStackWrapper */
-	private $itemInHand;
-	/** @var Vector3 */
-	private $playerPos;
-	/** @var Vector3 */
-	private $clickPos;
-	/** @var int */
-	private $blockRuntimeId;
+	private int $actionType;
+	private BlockPosition $blockPosition;
+	private int $face;
+	private int $hotbarSlot;
+	private ItemStackWrapper $itemInHand;
+	private Vector3 $playerPosition;
+	private Vector3 $clickPosition;
+	private int $blockRuntimeId;
 
 	public function getActionType() : int{
 		return $this->actionType;
 	}
 
-	public function getBlockPos() : Vector3{
-		return $this->blockPos;
+	public function getBlockPosition() : BlockPosition{
+		return $this->blockPosition;
 	}
 
 	public function getFace() : int{
@@ -70,12 +63,12 @@ class UseItemTransactionData extends TransactionData{
 		return $this->itemInHand;
 	}
 
-	public function getPlayerPos() : Vector3{
-		return $this->playerPos;
+	public function getPlayerPosition() : Vector3{
+		return $this->playerPosition;
 	}
 
-	public function getClickPos() : Vector3{
-		return $this->clickPos;
+	public function getClickPosition() : Vector3{
+		return $this->clickPosition;
 	}
 
 	public function getBlockRuntimeId() : int{
@@ -88,9 +81,7 @@ class UseItemTransactionData extends TransactionData{
 
 	protected function decodeData(PacketSerializer $stream) : void{
 		$this->actionType = $stream->getUnsignedVarInt();
-		$x = $y = $z = 0;
-		$stream->getBlockPosition($x, $y, $z);
-		$this->blockPos = new Vector3($x, $y, $z);
+		$this->blockPosition = $stream->getBlockPosition();
 		$this->face = $stream->getVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
 		if($stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
@@ -98,14 +89,14 @@ class UseItemTransactionData extends TransactionData{
 		}else{
 			$this->itemInHand = ItemStackWrapper::legacy($stream->getItemStackWithoutStackId());
 		}
-		$this->playerPos = $stream->getVector3();
-		$this->clickPos = $stream->getVector3();
+		$this->playerPosition = $stream->getVector3();
+		$this->clickPosition = $stream->getVector3();
 		$this->blockRuntimeId = $stream->getUnsignedVarInt();
 	}
 
 	protected function encodeData(PacketSerializer $stream) : void{
 		$stream->putUnsignedVarInt($this->actionType);
-		$stream->putBlockPosition($this->blockPos->getFloorX(), $this->blockPos->getFloorY(), $this->blockPos->getFloorZ());
+		$stream->putBlockPosition($this->blockPosition);
 		$stream->putVarInt($this->face);
 		$stream->putVarInt($this->hotbarSlot);
 		if($stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
@@ -113,24 +104,24 @@ class UseItemTransactionData extends TransactionData{
 		}else{
 			$stream->putItemStackWithoutStackId($this->itemInHand->getItemStack());
 		}
-		$stream->putVector3($this->playerPos);
-		$stream->putVector3($this->clickPos);
+		$stream->putVector3($this->playerPosition);
+		$stream->putVector3($this->clickPosition);
 		$stream->putUnsignedVarInt($this->blockRuntimeId);
 	}
 
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPos, Vector3 $clickPos, int $blockRuntimeId) : self{
+	public static function new(array $actions, int $actionType, BlockPosition $blockPosition, int $face, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPosition, Vector3 $clickPosition, int $blockRuntimeId) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->actionType = $actionType;
-		$result->blockPos = $blockPos;
+		$result->blockPosition = $blockPosition;
 		$result->face = $face;
 		$result->hotbarSlot = $hotbarSlot;
 		$result->itemInHand = $itemInHand;
-		$result->playerPos = $playerPos;
-		$result->clickPos = $clickPos;
+		$result->playerPosition = $playerPosition;
+		$result->clickPosition = $clickPosition;
 		$result->blockRuntimeId = $blockRuntimeId;
 		return $result;
 	}
