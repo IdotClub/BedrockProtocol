@@ -32,8 +32,6 @@ use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
 
-	//TODO: find fields
-
 	public int $windowId;
 	public int $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
 	public int $windowSlotCount = 0; //useless, seems to be part of a standard container header
@@ -42,7 +40,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	public int $playerActorUniqueId;
 	public string $displayName;
 	public bool $isV2Trading;
-	public bool $isWilling;
+	public bool $isEconomyTrading;
 	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag> */
 	public CacheableNbt $offers;
 
@@ -59,7 +57,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		int $playerActorUniqueId,
 		string $displayName,
 		bool $isV2Trading,
-		bool $isWilling,
+		bool $isEconomyTrading,
 		CacheableNbt $offers,
 	) : self{
 		$result = new self;
@@ -71,7 +69,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$result->playerActorUniqueId = $playerActorUniqueId;
 		$result->displayName = $displayName;
 		$result->isV2Trading = $isV2Trading;
-		$result->isWilling = $isWilling;
+		$result->isEconomyTrading = $isEconomyTrading;
 		$result->offers = $offers;
 		return $result;
 	}
@@ -85,7 +83,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$this->playerActorUniqueId = $in->getActorUniqueId();
 		$this->displayName = $in->getString();
 		$this->isV2Trading = $in->getBool();
-		$this->isWilling = $in->getBool();
+		$this->isEconomyTrading = $in->getBool();
 		$this->offers = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
@@ -98,7 +96,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$out->putActorUniqueId($this->playerActorUniqueId);
 		$out->putString($this->displayName);
 		$out->putBool($this->isV2Trading);
-		$out->putBool($this->isWilling);
+		$out->putBool($this->isEconomyTrading);
 		$out->put($this->offers->getEncodedNbt());
 	}
 

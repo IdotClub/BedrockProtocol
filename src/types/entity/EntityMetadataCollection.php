@@ -28,6 +28,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\player\Player;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
 class EntityMetadataCollection{
@@ -68,7 +69,10 @@ class EntityMetadataCollection{
 		$this->set($key, new StringMetadataProperty($value), $force);
 	}
 
-	public function setCompoundTag(int $key, CompoundTag $value, bool $force = false) : void{
+	/**
+	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $value
+	 */
+	public function setCompoundTag(int $key, CacheableNbt $value, bool $force = false) : void{
 		$this->set($key, new CompoundTagMetadataProperty($value), $force);
 	}
 
