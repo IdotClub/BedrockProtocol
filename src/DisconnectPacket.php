@@ -17,13 +17,11 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
-
-#include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
@@ -53,7 +51,7 @@ class DisconnectPacket extends DataPacket implements ClientboundPacket, Serverbo
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putBool($this->message !== null);
+		$out->putBool($this->message === null);
 		if($this->message !== null){
 			$out->putString($this->message);
 		}

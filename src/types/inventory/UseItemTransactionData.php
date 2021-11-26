@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,8 +28,13 @@ use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 class UseItemTransactionData extends TransactionData{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = InventoryTransactionPacket::TYPE_USE_ITEM;
+
 	public const ACTION_CLICK_BLOCK = 0;
 	public const ACTION_CLICK_AIR = 1;
 	public const ACTION_BREAK_BLOCK = 2;
@@ -73,10 +78,6 @@ class UseItemTransactionData extends TransactionData{
 
 	public function getBlockRuntimeId() : int{
 		return $this->blockRuntimeId;
-	}
-
-	public function getTypeId() : int{
-		return InventoryTransactionPacket::TYPE_USE_ITEM;
 	}
 
 	protected function decodeData(PacketSerializer $stream) : void{

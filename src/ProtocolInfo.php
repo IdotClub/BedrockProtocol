@@ -17,11 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
+
+use function in_array;
 
 /**
  * Version numbers and packet IDs for the current Minecraft PE protocol

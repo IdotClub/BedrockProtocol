@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 interface MetadataProperty{
 
-	public static function id() : int;
+	public function getTypeId() : int;
 
 	public function write(PacketSerializer $out) : void;
 

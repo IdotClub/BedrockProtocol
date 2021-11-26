@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,8 +27,13 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 class UseItemOnEntityTransactionData extends TransactionData{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY;
+
 	public const ACTION_INTERACT = 0;
 	public const ACTION_ATTACK = 1;
 	public const ACTION_ITEM_INTERACT = 2;
@@ -62,10 +67,6 @@ class UseItemOnEntityTransactionData extends TransactionData{
 
 	public function getClickPosition() : Vector3{
 		return $this->clickPosition;
-	}
-
-	public function getTypeId() : int{
-		return InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY;
 	}
 
 	protected function decodeData(PacketSerializer $stream) : void{

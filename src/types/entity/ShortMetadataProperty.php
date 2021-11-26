@@ -17,16 +17,20 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 final class ShortMetadataProperty implements MetadataProperty{
+	use GetTypeIdFromConstTrait;
 	use IntegerishMetadataProperty;
+
+	public const ID = EntityMetadataTypes::SHORT;
 
 	protected function min() : int{
 		return -0x8000;
@@ -34,10 +38,6 @@ final class ShortMetadataProperty implements MetadataProperty{
 
 	protected function max() : int{
 		return 0x7fff;
-	}
-
-	public static function id() : int{
-		return EntityMetadataTypes::SHORT;
 	}
 
 	public static function read(PacketSerializer $in) : self{

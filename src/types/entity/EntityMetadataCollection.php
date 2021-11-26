@@ -17,18 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\player\Player;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\player\Player;
 use function get_class;
 
 class EntityMetadataCollection{
@@ -171,7 +170,6 @@ class EntityMetadataCollection{
 	/**
 	 * @param  MetadataProperty[] $properties
 	 * @phpstan-param  array<int, MetadataProperty> $properties
-	 * @param int   $protocolId
 	 *
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>

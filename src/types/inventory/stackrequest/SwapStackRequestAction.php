@@ -17,18 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 /**
  * Swaps two stacks. These don't have to be in the same inventory. This action does not modify the stacks themselves.
  */
 final class SwapStackRequestAction extends ItemStackRequestAction{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = ItemStackRequestActionType::SWAP;
 
 	private ItemStackRequestSlotInfo $slot1;
 	private ItemStackRequestSlotInfo $slot2;
@@ -41,8 +45,6 @@ final class SwapStackRequestAction extends ItemStackRequestAction{
 	public function getSlot1() : ItemStackRequestSlotInfo{ return $this->slot1; }
 
 	public function getSlot2() : ItemStackRequestSlotInfo{ return $this->slot2; }
-
-	public static function getTypeId() : int{ return ItemStackRequestActionType::SWAP; }
 
 	public static function read(PacketSerializer $in) : self{
 		$slot1 = ItemStackRequestSlotInfo::read($in);

@@ -17,18 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 /**
  * Drops some (or all) items from the source slot into the world as an item entity.
  */
 final class DropStackRequestAction extends ItemStackRequestAction{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = ItemStackRequestActionType::DROP;
 
 	private int $count;
 	private ItemStackRequestSlotInfo $source;
@@ -45,8 +49,6 @@ final class DropStackRequestAction extends ItemStackRequestAction{
 	public function getSource() : ItemStackRequestSlotInfo{ return $this->source; }
 
 	public function isRandomly() : bool{ return $this->randomly; }
-
-	public static function getTypeId() : int{ return ItemStackRequestActionType::DROP; }
 
 	public static function read(PacketSerializer $in) : self{
 		$count = $in->getByte();

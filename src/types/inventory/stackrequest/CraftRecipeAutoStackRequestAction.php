@@ -17,19 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 /**
  * Tells that the current transaction crafted the specified recipe, using the recipe book. This is effectively the same
  * as the regular crafting result action.
  */
 final class CraftRecipeAutoStackRequestAction extends ItemStackRequestAction{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = ItemStackRequestActionType::CRAFTING_RECIPE_AUTO;
 
 	private int $recipeId;
 	private int $repetitions;
@@ -42,8 +46,6 @@ final class CraftRecipeAutoStackRequestAction extends ItemStackRequestAction{
 	public function getRecipeId() : int{ return $this->recipeId; }
 
 	public function getRepetitions() : int{ return $this->repetitions; }
-
-	public static function getTypeId() : int{ return ItemStackRequestActionType::CRAFTING_RECIPE_AUTO; }
 
 	public static function read(PacketSerializer $in) : self{
 		$recipeId = $in->readGenericTypeNetworkId();

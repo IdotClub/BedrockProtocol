@@ -17,13 +17,11 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
-
-#include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\InventoryTransactionChangedSlotsHack;
@@ -57,11 +55,12 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 	 * @generate-create-func
 	 * @param InventoryTransactionChangedSlotsHack[] $requestChangedSlots
 	 */
-	public static function create(int $requestId, array $requestChangedSlots, TransactionData $trData) : self{
+	public static function create(int $requestId, array $requestChangedSlots, TransactionData $trData, bool $hasItemStackIds) : self{
 		$result = new self;
 		$result->requestId = $requestId;
 		$result->requestChangedSlots = $requestChangedSlots;
 		$result->trData = $trData;
+		$result->hasItemStackIds = $hasItemStackIds;
 		return $result;
 	}
 
@@ -81,19 +80,19 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 		}
 
 		switch($transactionType){
-			case self::TYPE_NORMAL:
+			case NormalTransactionData::ID:
 				$this->trData = new NormalTransactionData();
 				break;
-			case self::TYPE_MISMATCH:
+			case MismatchTransactionData::ID:
 				$this->trData = new MismatchTransactionData();
 				break;
-			case self::TYPE_USE_ITEM:
+			case UseItemTransactionData::ID:
 				$this->trData = new UseItemTransactionData();
 				break;
-			case self::TYPE_USE_ITEM_ON_ENTITY:
+			case UseItemOnEntityTransactionData::ID:
 				$this->trData = new UseItemOnEntityTransactionData();
 				break;
-			case self::TYPE_RELEASE_ITEM:
+			case ReleaseItemTransactionData::ID:
 				$this->trData = new ReleaseItemTransactionData();
 				break;
 			default:

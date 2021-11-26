@@ -17,13 +17,11 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\serializer;
-
-#include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -49,7 +47,6 @@ use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\FloatGameRule;
 use pocketmine\network\mcpe\protocol\types\GameRule;
-use pocketmine\network\mcpe\protocol\types\GameRuleType;
 use pocketmine\network\mcpe\protocol\types\IntGameRule;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
@@ -60,6 +57,7 @@ use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use Ramsey\Uuid\Uuid;
@@ -517,23 +515,23 @@ class PacketSerializer extends BinaryStream{
 
 	private function readMetadataProperty(int $type) : MetadataProperty{
 		switch($type){
-			case ByteMetadataProperty::id():
+			case ByteMetadataProperty::ID:
 				return ByteMetadataProperty::read($this);
-			case ShortMetadataProperty::id():
+			case ShortMetadataProperty::ID:
 				return ShortMetadataProperty::read($this);
-			case IntMetadataProperty::id():
+			case IntMetadataProperty::ID:
 				return IntMetadataProperty::read($this);
-			case FloatMetadataProperty::id():
+			case FloatMetadataProperty::ID:
 				return FloatMetadataProperty::read($this);
-			case StringMetadataProperty::id():
+			case StringMetadataProperty::ID:
 				return StringMetadataProperty::read($this);
-			case CompoundTagMetadataProperty::id():
+			case CompoundTagMetadataProperty::ID:
 				return CompoundTagMetadataProperty::read($this);
-			case BlockPosMetadataProperty::id():
+			case BlockPosMetadataProperty::ID:
 				return BlockPosMetadataProperty::read($this);
-			case LongMetadataProperty::id():
+			case LongMetadataProperty::ID:
 				return LongMetadataProperty::read($this);
-			case Vec3MetadataProperty::id():
+			case Vec3MetadataProperty::ID:
 				return Vec3MetadataProperty::read($this);
 			default:
 				throw new PacketDecodeException("Unknown entity metadata type " . $type);
@@ -551,7 +549,7 @@ class PacketSerializer extends BinaryStream{
 		$this->putUnsignedVarInt(count($metadata));
 		foreach($metadata as $key => $d){
 			$this->putUnsignedVarInt($key);
-			$this->putUnsignedVarInt($d::id());
+			$this->putUnsignedVarInt($d->getTypeId());
 			$d->write($this);
 		}
 	}
@@ -624,7 +622,7 @@ class PacketSerializer extends BinaryStream{
 	 */
 	public function getBlockPosition() : BlockPosition{
 		$x = $this->getVarInt();
-		$y = $this->getUnsignedVarInt();
+		$y = Binary::signInt($this->getUnsignedVarInt()); //Y coordinate may be signed, but it's written unsigned :<
 		$z = $this->getVarInt();
 		return new BlockPosition($x, $y, $z);
 	}
@@ -634,7 +632,7 @@ class PacketSerializer extends BinaryStream{
 	 */
 	public function putBlockPosition(BlockPosition $blockPosition) : void{
 		$this->putVarInt($blockPosition->getX());
-		$this->putUnsignedVarInt($blockPosition->getY());
+		$this->putUnsignedVarInt(Binary::unsignInt($blockPosition->getY())); //Y coordinate may be signed, but it's written unsigned :<
 		$this->putVarInt($blockPosition->getZ());
 	}
 
@@ -711,9 +709,9 @@ class PacketSerializer extends BinaryStream{
 
 	private function readGameRule(int $type, bool $isPlayerModifiable) : GameRule{
 		switch($type){
-			case GameRuleType::BOOL: return BoolGameRule::decode($this, $isPlayerModifiable);
-			case GameRuleType::INT: return IntGameRule::decode($this, $isPlayerModifiable);
-			case GameRuleType::FLOAT: return FloatGameRule::decode($this, $isPlayerModifiable);
+			case BoolGameRule::ID: return BoolGameRule::decode($this, $isPlayerModifiable);
+			case IntGameRule::ID: return IntGameRule::decode($this, $isPlayerModifiable);
+			case FloatGameRule::ID: return FloatGameRule::decode($this, $isPlayerModifiable);
 			default:
 				throw new PacketDecodeException("Unknown gamerule type $type");
 		}
@@ -758,7 +756,7 @@ class PacketSerializer extends BinaryStream{
 			if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_0){
 				$this->putBool($rule->isPlayerModifiable());
 			}
-			$this->putUnsignedVarInt($rule->getType());
+			$this->putUnsignedVarInt($rule->getTypeId());
 			$rule->encode($this);
 		}
 	}
@@ -824,8 +822,10 @@ class PacketSerializer extends BinaryStream{
 		$result->lastTouchedByPlayerID = $this->getActorUniqueId();
 		$result->rotation = $this->getByte();
 		$result->mirror = $this->getByte();
-		$result->integrityValue = $this->getFloat();
-		$result->integritySeed = $this->getInt();
+		$result->animationMode = $this->getByte();
+		$result->animationSeconds = $this->getLFloat();
+		$result->integrityValue = $this->getLFloat();
+		$result->integritySeed = $this->getLInt();
 		$result->pivot = $this->getVector3();
 
 		return $result;
@@ -843,8 +843,10 @@ class PacketSerializer extends BinaryStream{
 		$this->putActorUniqueId($structureSettings->lastTouchedByPlayerID);
 		$this->putByte($structureSettings->rotation);
 		$this->putByte($structureSettings->mirror);
-		$this->putFloat($structureSettings->integrityValue);
-		$this->putInt($structureSettings->integritySeed);
+		$this->putByte($structureSettings->animationMode);
+		$this->putLFloat($structureSettings->animationSeconds);
+		$this->putLFloat($structureSettings->integrityValue);
+		$this->putLInt($structureSettings->integritySeed);
 		$this->putVector3($structureSettings->pivot);
 	}
 

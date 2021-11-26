@@ -17,19 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 
 /**
  * I have no clear idea what this does. It seems to be the client hinting to the server "hey, put a secondary output in
  * X crafting grid slot". This is used for things like buckets.
  */
 final class CraftingMarkSecondaryResultStackRequestAction extends ItemStackRequestAction{
+	use GetTypeIdFromConstTrait;
+
+	public const ID = ItemStackRequestActionType::CRAFTING_MARK_SECONDARY_RESULT_SLOT;
 
 	private int $craftingGridSlot;
 
@@ -38,8 +42,6 @@ final class CraftingMarkSecondaryResultStackRequestAction extends ItemStackReque
 	}
 
 	public function getCraftingGridSlot() : int{ return $this->craftingGridSlot; }
-
-	public static function getTypeId() : int{ return ItemStackRequestActionType::CRAFTING_MARK_SECONDARY_RESULT_SLOT; }
 
 	public static function read(PacketSerializer $in) : self{
 		$slot = $in->getByte();
