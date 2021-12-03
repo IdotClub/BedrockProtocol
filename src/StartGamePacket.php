@@ -62,6 +62,14 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 * @phpstan-var list<BlockPaletteEntry>
 	 */
 	public array $blockPalette = [];
+
+	/**
+	 * Checksum of the full block palette. This is a hash of some weird stringified version of the NBT.
+	 * This is used along with the baseGameVersion to check for inconsistencies in the block palette.
+	 * Fill with 0 if you don't want to bother having the client verify the palette (seems pointless anyway).
+	 */
+	public int $blockPaletteChecksum;
+
 	/**
 	 * @var ItemTypeEntry[]
 	 * @phpstan-var list<ItemTypeEntry>
@@ -94,6 +102,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		bool $enableNewInventorySystem,
 		string $serverSoftwareVersion,
 		array $blockPalette,
+		int $blockPaletteChecksum,
 		array $itemTable,
 	) : self{
 		$result = new self;
@@ -115,6 +124,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$result->enableNewInventorySystem = $enableNewInventorySystem;
 		$result->serverSoftwareVersion = $serverSoftwareVersion;
 		$result->blockPalette = $blockPalette;
+		$result->blockPaletteChecksum = $blockPaletteChecksum;
 		$result->itemTable = $itemTable;
 		return $result;
 	}
@@ -161,6 +171,9 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_0){
 			$this->serverSoftwareVersion = $in->getString();
 		}
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_0){
+			$this->blockPaletteChecksum = $in->getLLong();
+		}
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -201,6 +214,9 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$out->putBool($this->enableNewInventorySystem);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_0){
 			$out->putString($this->serverSoftwareVersion);
+		}
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_0){
+			$out->putLLong($this->blockPaletteChecksum);
 		}
 	}
 
