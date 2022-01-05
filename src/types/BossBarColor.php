@@ -23,9 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-final class PlayerMovementType{
+class BossBarColor{
 
-	public const LEGACY = 0; //MovePlayerPacket
-	public const SERVER_AUTHORITATIVE_V1 = 1; //PlayerAuthInputPacket
-	public const SERVER_AUTHORITATIVE_V2_REWIND = 2; //PlayerAuthInputPacket + movement replay (used for server authoritative knockback)
+	public const PINK = 0;
+	public const BLUE = 1;
+	public const RED = 2;
+	public const GREEN = 3;
+	public const YELLOW = 4;
+	public const PURPLE = 5;
+	public const WHITE = 6;
+
 }
