@@ -44,7 +44,7 @@ class PacketBatchTest extends TestCase{
 		$read = new PacketBatch($write->getBuffer());
 		$this->expectException(PacketDecodeException::class);
 		$readCount = 0;
-		foreach($read->getPackets(PacketPool::getInstance(), $decoderContext, $limit) as $packet){
+		foreach($read->getPackets(ProtocolInfo::CURRENT_PROTOCOL, PacketPool::getInstance(), $decoderContext, $limit) as $packet){
 			$readCount++;
 		}
 	}
@@ -55,7 +55,7 @@ class PacketBatchTest extends TestCase{
 		$write = PacketBatch::fromPackets(ProtocolInfo::CURRENT_PROTOCOL, $decoderContext, ...array_fill(0, $limit, new TestPacket()));
 		$read = new PacketBatch($write->getBuffer());
 		$readCount = 0;
-		foreach($read->getPackets(PacketPool::getInstance(), $decoderContext, $limit) as $packet){
+		foreach($read->getPackets(ProtocolInfo::CURRENT_PROTOCOL, PacketPool::getInstance(), $decoderContext, $limit) as $packet){
 			$readCount++;
 		}
 		self::assertSame($limit, $readCount);
