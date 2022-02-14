@@ -23,16 +23,20 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 	private int $entityNetId;
 	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag> */
 	private CacheableNbt $data;
+	private string $jsonIdentifier;
+	private string $instanceName;
 	private string $engineVersion;
 
 	/**
 	 * @generate-create-func
 	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $data
 	 */
-	public static function create(int $entityNetId, CacheableNbt $data, string $engineVersion) : self{
+	public static function create(int $entityNetId, CacheableNbt $data, string $jsonIdentifier, string $instanceName, string $engineVersion) : self{
 		$result = new self;
 		$result->entityNetId = $entityNetId;
 		$result->data = $data;
+		$result->jsonIdentifier = $jsonIdentifier;
+		$result->instanceName = $instanceName;
 		$result->engineVersion = $engineVersion;
 		return $result;
 	}
@@ -42,11 +46,22 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 	/** @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag> */
 	public function getData() : CacheableNbt{ return $this->data; }
 
+	public function getJsonIdentifier() : string{ return $this->jsonIdentifier; }
+
+	public function getInstanceName() : string{ return $this->instanceName; }
+
 	public function getEngineVersion() : string{ return $this->engineVersion; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityNetId = $in->getUnsignedVarInt();
 		$this->data = new CacheableNbt($in->getNbtCompoundRoot());
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_10){
+			$this->jsonIdentifier = $in->getString();
+			$this->instanceName = $in->getString();
+		}else{
+			$this->jsonIdentifier = "";
+			$this->instanceName = "";
+		}
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$this->engineVersion = $in->getString();
 		}
@@ -55,6 +70,10 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt($this->entityNetId);
 		$out->put($this->data->getEncodedNbt());
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_10){
+			$out->putString($this->jsonIdentifier);
+			$out->putString($this->instanceName);
+		}
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$out->putString($this->engineVersion);
 		}

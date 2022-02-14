@@ -12,31 +12,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\entity;
+namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
-use pocketmine\utils\Binary;
 
-final class ByteMetadataProperty implements MetadataProperty{
+/**
+ * Apply a pattern to a banner using a loom.
+ */
+final class LoomStackRequestAction extends ItemStackRequestAction{
 	use GetTypeIdFromConstTrait;
-	use IntegerishMetadataProperty;
 
-	public const ID = EntityMetadataTypes::BYTE;
+	public const ID = ItemStackRequestActionType::CRAFTING_LOOM;
 
-	protected function min() : int{
-		return -0x80;
-	}
+	public function __construct(
+		private string $patternId
+	){}
 
-	protected function max() : int{
-		return 0x7f;
-	}
+	public function getPatternId() : string{ return $this->patternId; }
 
 	public static function read(PacketSerializer $in) : self{
-		return new self(Binary::signByte($in->getByte()));
+		return new self($in->getString());
 	}
 
 	public function write(PacketSerializer $out) : void{
-		$out->putByte($this->value);
+		$out->putString($this->patternId);
 	}
 }

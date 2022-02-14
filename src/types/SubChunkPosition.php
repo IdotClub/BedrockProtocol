@@ -12,31 +12,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\entity;
+namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
-use pocketmine\utils\Binary;
 
-final class ByteMetadataProperty implements MetadataProperty{
-	use GetTypeIdFromConstTrait;
-	use IntegerishMetadataProperty;
+final class SubChunkPosition{
 
-	public const ID = EntityMetadataTypes::BYTE;
+	public function __construct(
+		private int $x,
+		private int $y,
+		private int $z,
+	){}
 
-	protected function min() : int{
-		return -0x80;
-	}
+	public function getX() : int{ return $this->x; }
 
-	protected function max() : int{
-		return 0x7f;
-	}
+	public function getY() : int{ return $this->y; }
+
+	public function getZ() : int{ return $this->z; }
 
 	public static function read(PacketSerializer $in) : self{
-		return new self(Binary::signByte($in->getByte()));
+		$x = $in->getVarInt();
+		$y = $in->getVarInt();
+		$z = $in->getVarInt();
+
+		return new self($x, $y, $z);
 	}
 
 	public function write(PacketSerializer $out) : void{
-		$out->putByte($this->value);
+		$out->putVarInt($this->x);
+		$out->putVarInt($this->y);
+		$out->putVarInt($this->z);
 	}
 }

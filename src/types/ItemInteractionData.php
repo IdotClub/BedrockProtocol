@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\network\mcpe\protocol\BedrockProtocolInfo;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\InventoryTransactionChangedSlotsHack;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
@@ -59,8 +61,15 @@ final class ItemInteractionData{
 				$requestChangedSlots[] = InventoryTransactionChangedSlotsHack::read($in);
 			}
 		}
+		$hasItemStackIds = false;
+		if($in->getProtocolId() < ProtocolInfo::PROTOCOL_1_16_220){
+			$inClone = clone $in;
+			//actionType
+			$inClone->getUnsignedVarInt();
+			$hasItemStackIds = $inClone->getBool();
+		}
 		$transactionData = new UseItemTransactionData();
-		$transactionData->decode($in);
+		$transactionData->decode($in, $hasItemStackIds);
 		return new ItemInteractionData($requestId, $requestChangedSlots, $transactionData);
 	}
 
@@ -72,6 +81,6 @@ final class ItemInteractionData{
 				$changedSlot->write($out);
 			}
 		}
-		$this->transactionData->encode($out);
+		$this->transactionData->encode($out, $out->getProtocolId() <= ProtocolInfo::PROTOCOL_1_16_220);
 	}
 }
