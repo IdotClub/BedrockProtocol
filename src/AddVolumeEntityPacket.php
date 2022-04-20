@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
@@ -25,18 +26,33 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 	private CacheableNbt $data;
 	private string $jsonIdentifier;
 	private string $instanceName;
+	private BlockPosition $minBound;
+	private BlockPosition $maxBound;
+	private int $dimension;
 	private string $engineVersion;
 
 	/**
 	 * @generate-create-func
 	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $data
 	 */
-	public static function create(int $entityNetId, CacheableNbt $data, string $jsonIdentifier, string $instanceName, string $engineVersion) : self{
+	public static function create(
+		int $entityNetId,
+		CacheableNbt $data,
+		string $jsonIdentifier,
+		string $instanceName,
+		BlockPosition $minBound,
+		BlockPosition $maxBound,
+		int $dimension,
+		string $engineVersion,
+	) : self{
 		$result = new self;
 		$result->entityNetId = $entityNetId;
 		$result->data = $data;
 		$result->jsonIdentifier = $jsonIdentifier;
 		$result->instanceName = $instanceName;
+		$result->minBound = $minBound;
+		$result->maxBound = $maxBound;
+		$result->dimension = $dimension;
 		$result->engineVersion = $engineVersion;
 		return $result;
 	}
@@ -50,6 +66,12 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 
 	public function getInstanceName() : string{ return $this->instanceName; }
 
+	public function getMinBound() : BlockPosition{ return $this->minBound; }
+
+	public function getMaxBound() : BlockPosition{ return $this->maxBound; }
+
+	public function getDimension() : int{ return $this->dimension; }
+
 	public function getEngineVersion() : string{ return $this->engineVersion; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
@@ -62,6 +84,11 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 			$this->jsonIdentifier = "";
 			$this->instanceName = "";
 		}
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30){
+			$this->minBound = $in->getBlockPosition();
+			$this->maxBound = $in->getBlockPosition();
+			$this->dimension = $in->getVarInt();
+		}
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$this->engineVersion = $in->getString();
 		}
@@ -73,6 +100,11 @@ class AddVolumeEntityPacket extends DataPacket implements ClientboundPacket{
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_10){
 			$out->putString($this->jsonIdentifier);
 			$out->putString($this->instanceName);
+		}
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30){
+			$out->putBlockPosition($this->minBound);
+			$out->putBlockPosition($this->maxBound);
+			$out->putVarInt($this->dimension);
 		}
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_30){
 			$out->putString($this->engineVersion);

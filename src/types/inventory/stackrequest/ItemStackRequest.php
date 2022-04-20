@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
-use pocketmine\network\mcpe\protocol\BedrockProtocolInfo;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
@@ -43,12 +42,6 @@ final class ItemStackRequest{
 		$this->filterStrings = $filterStrings;
 	}
 
-	/**
-	 * @param int              $typeId
-	 * @param PacketSerializer $in
-	 *
-	 * @return int
-	 */
 	private static function fixTypeId(int $typeId, PacketSerializer $in) : int{
 		if($typeId >= 9 && $in->getProtocolId() < ProtocolInfo::PROTOCOL_1_16_210){
 			//MineBlockStackRequestAction

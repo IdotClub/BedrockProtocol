@@ -37,6 +37,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public float $yaw = 0.0;
 	public float $headYaw = 0.0;
 	public ItemStackWrapper $item;
+	public int $gameMode;
 	/**
 	 * @var MetadataProperty[]
 	 * @phpstan-var array<int, MetadataProperty>
@@ -68,6 +69,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		float $yaw,
 		float $headYaw,
 		ItemStackWrapper $item,
+		int $gameMode,
 		array $metadata,
 		AdventureSettingsPacket $adventureSettingsPacket,
 		array $links,
@@ -86,6 +88,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		$result->yaw = $yaw;
 		$result->headYaw = $headYaw;
 		$result->item = $item;
+		$result->gameMode = $gameMode;
 		$result->metadata = $metadata;
 		$result->adventureSettingsPacket = $adventureSettingsPacket;
 		$result->links = $links;
@@ -109,6 +112,9 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 			$this->item = ItemStackWrapper::read($in);
 		}else{
 			$this->item = ItemStackWrapper::legacy($in->getItemStackWithoutStackId());
+		}
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30){
+			$this->gameMode = $in->getVarInt();
 		}
 		$this->metadata = $in->getEntityMetadata();
 
@@ -139,6 +145,9 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 			$this->item->write($out);
 		}else{
 			$out->putItemStackWithoutStackId($this->item->getItemStack());
+		}
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30){
+			$out->putVarInt($this->gameMode);
 		}
 		$out->putEntityMetadata($this->metadata);
 

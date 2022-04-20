@@ -194,7 +194,7 @@ class EntityMetadataCollection{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	private function convertProperties(array $properties, int $protocolId): array
+	private function convertProperties(array $properties, int $protocolId) : array
 	{
 		if ($protocolId <= ProtocolInfo::PROTOCOL_1_16_200) {
 			$newProperties = [];
