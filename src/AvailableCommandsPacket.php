@@ -43,21 +43,24 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	public const ARG_TYPE_WILDCARD_INT = 0x05;
 	public const ARG_TYPE_OPERATOR = 0x06;
 	public const ARG_TYPE_TARGET = 0x07;
-	public const ARG_TYPE_WILDCARD_TARGET = 0x08;
+	public const ARG_TYPE_WILDCARD_TARGET = 0x09;
 
 	public const ARG_TYPE_FILEPATH = 0x10;
 
-	public const ARG_TYPE_STRING = 0x20;
+	public const ARG_TYPE_EQUIPMENT_SLOT = 0x25;
 
-	public const ARG_TYPE_POSITION = 0x28;
+	public const ARG_TYPE_STRING = 0x26;
 
-	public const ARG_TYPE_MESSAGE = 0x2c;
+	public const ARG_TYPE_INT_POSITION = 0x2e;
+	public const ARG_TYPE_POSITION = 0x2f;
 
-	public const ARG_TYPE_RAWTEXT = 0x2e;
+	public const ARG_TYPE_MESSAGE = 0x32;
 
-	public const ARG_TYPE_JSON = 0x32;
+	public const ARG_TYPE_RAWTEXT = 0x34;
 
-	public const ARG_TYPE_COMMAND = 0x3f;
+	public const ARG_TYPE_JSON = 0x38;
+
+	public const ARG_TYPE_COMMAND = 0x45;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
@@ -112,6 +115,23 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		$result->softEnums = $softEnums;
 		$result->enumConstraints = $enumConstraints;
 		return $result;
+	}
+
+	public static function convertArg(int $protocolId, int $type) : int{
+		if($protocolId >= ProtocolInfo::PROTOCOL_1_18_30){
+			return $type;
+		}
+
+		return match ($type) {
+			self::ARG_TYPE_WILDCARD_TARGET => 0x08,
+			self::ARG_TYPE_STRING => 0x20,
+			self::ARG_TYPE_POSITION => 0x28,
+			self::ARG_TYPE_MESSAGE => 0x2c,
+			self::ARG_TYPE_RAWTEXT => 0x2e,
+			self::ARG_TYPE_JSON => 0x32,
+			self::ARG_TYPE_COMMAND => 0x3f,
+			default => $type,
+		};
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
@@ -306,7 +326,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 			for($paramIndex = 0, $paramCount = $in->getUnsignedVarInt(); $paramIndex < $paramCount; ++$paramIndex){
 				$parameter = new CommandParameter();
 				$parameter->paramName = $in->getString();
-				$parameter->paramType = $in->getLInt();
+				$parameter->paramType = self::convertArg($in->getProtocolId(), $in->getLInt());
 				$parameter->isOptional = $in->getBool();
 				$parameter->flags = $in->getByte();
 
@@ -371,7 +391,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 					$type = $parameter->paramType;
 				}
 
-				$out->putLInt($type);
+				$out->putLInt(self::convertArg($out->getProtocolId(), $type));
 				$out->putBool($parameter->isOptional);
 				$out->putByte($parameter->flags);
 			}
