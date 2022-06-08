@@ -25,16 +25,18 @@ class PlayerActionPacket extends DataPacket implements ServerboundPacket{
 	/** @see PlayerAction */
 	public int $action;
 	public BlockPosition $blockPosition;
+	public BlockPosition $resultPosition;
 	public int $face;
 
 	/**
 	 * @generate-create-func
 	 */
-	public static function create(int $actorRuntimeId, int $action, BlockPosition $blockPosition, int $face) : self{
+	public static function create(int $actorRuntimeId, int $action, BlockPosition $blockPosition, BlockPosition $resultPosition, int $face) : self{
 		$result = new self;
 		$result->actorRuntimeId = $actorRuntimeId;
 		$result->action = $action;
 		$result->blockPosition = $blockPosition;
+		$result->resultPosition = $resultPosition;
 		$result->face = $face;
 		return $result;
 	}
@@ -43,6 +45,11 @@ class PlayerActionPacket extends DataPacket implements ServerboundPacket{
 		$this->actorRuntimeId = $in->getActorRuntimeId();
 		$this->action = $in->getVarInt();
 		$this->blockPosition = $in->getBlockPosition();
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_0){
+			$this->resultPosition = $in->getBlockPosition();
+		}else{
+			$this->resultPosition = $this->blockPosition;
+		}
 		$this->face = $in->getVarInt();
 	}
 
@@ -50,6 +57,9 @@ class PlayerActionPacket extends DataPacket implements ServerboundPacket{
 		$out->putActorRuntimeId($this->actorRuntimeId);
 		$out->putVarInt($this->action);
 		$out->putBlockPosition($this->blockPosition);
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_0){
+			$out->putBlockPosition($this->resultPosition);
+		}
 		$out->putVarInt($this->face);
 	}
 
