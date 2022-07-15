@@ -96,7 +96,9 @@ final class LevelSettings{
 		$this->difficulty = $in->getVarInt();
 		$this->spawnPosition = $in->getBlockPosition();
 		$this->hasAchievementsDisabled = $in->getBool();
-		$this->isEditorMode = $in->getBool();
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_10){
+			$this->isEditorMode = $in->getBool();
+		}
 		$this->time = $in->getVarInt();
 		$this->eduEditionOffer = $in->getVarInt();
 		$this->hasEduFeaturesEnabled = $in->getBool();
@@ -149,7 +151,9 @@ final class LevelSettings{
 		$out->putVarInt($this->difficulty);
 		$out->putBlockPosition($this->spawnPosition);
 		$out->putBool($this->hasAchievementsDisabled);
-		$out->putBool($this->isEditorMode);
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_10){
+			$out->putBool($this->isEditorMode);
+		}
 		$out->putVarInt($this->time);
 		$out->putVarInt($this->eduEditionOffer);
 		$out->putBool($this->hasEduFeaturesEnabled);
